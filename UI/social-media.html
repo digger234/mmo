@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Manager - MMO Tool</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #475569);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: white;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-gradient);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 20px;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .platform-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .platform-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 4s infinite;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .platform-card.running {
+            border-color: #10b981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .platform-card.stopped {
+            border-color: #ef4444;
+        }
+
+        .platform-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .platform-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .platform-status {
+            font-size: 0.9rem;
+            color: #10b981;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .platform-status.running {
+            color: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        .platform-status.stopped {
+            color: #ef4444;
+        }
+
+        .platform-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .stat-item .stat-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-item .stat-value {
+            font-size: 1.3rem;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+
+        .platform-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: var(--shadow-strong);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 35px rgba(79, 172, 254, 0.4);
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .platforms-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📱 Social Media Manager</h1>
+        <p>Manage all your social media accounts in one place</p>
+    </div>
+
+    <div class="nav-tabs">
+        <a href="dashboard.html" class="nav-tab">
+            <span>📊</span> Dashboard
+        </a>
+        <a href="social-media.html" class="nav-tab active">
+            <span>📱</span> Social Media
+        </a>
+        <a href="email-manager.html" class="nav-tab">
+            <span>📧</span> Email Manager
+        </a>
+        <a href="proxy-manager.html" class="nav-tab">
+            <span>🌐</span> Proxy Manager
+        </a>
+        <a href="analytics.html" class="nav-tab">
+            <span>📈</span> Analytics
+        </a>
+        <a href="settings.html" class="nav-tab">
+            <span>⚙️</span> Settings
+        </a>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-primary" onclick="startAll()">▶️ Start All</button>
+        <button class="btn btn-danger" onclick="stopAll()">⏹️ Stop All</button>
+        <button class="btn btn-success" onclick="refreshStats()">🔄 Refresh</button>
+    </div>
+
+    <div class="platforms-grid">
+        <div class="platform-card" data-platform="facebook">
+            <span class="platform-icon">📘</span>
+            <div class="platform-name">Facebook</div>
+            <div class="platform-status" id="facebook-status">Stopped</div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accounts</span>
+                    <span class="stat-value" id="facebook-accounts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="facebook-active">0</span>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('facebook')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('facebook')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card" data-platform="instagram">
+            <span class="platform-icon">📷</span>
+            <div class="platform-name">Instagram</div>
+            <div class="platform-status" id="instagram-status">Stopped</div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accounts</span>
+                    <span class="stat-value" id="instagram-accounts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="instagram-active">0</span>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('instagram')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('instagram')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card" data-platform="tiktok">
+            <span class="platform-icon">🎵</span>
+            <div class="platform-name">TikTok</div>
+            <div class="platform-status" id="tiktok-status">Stopped</div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accounts</span>
+                    <span class="stat-value" id="tiktok-accounts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="tiktok-active">0</span>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('tiktok')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('tiktok')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card" data-platform="twitter">
+            <span class="platform-icon">🐦</span>
+            <div class="platform-name">Twitter</div>
+            <div class="platform-status" id="twitter-status">Stopped</div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accounts</span>
+                    <span class="stat-value" id="twitter-accounts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="twitter-active">0</span>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('twitter')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('twitter')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card" data-platform="youtube">
+            <span class="platform-icon">📺</span>
+            <div class="platform-name">YouTube</div>
+            <div class="platform-status" id="youtube-status">Stopped</div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accounts</span>
+                    <span class="stat-value" id="youtube-accounts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="youtube-active">0</span>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('youtube')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('youtube')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card" data-platform="linkedin">
+            <span class="platform-icon">💼</span>
+            <div class="platform-name">LinkedIn</div>
+            <div class="platform-status" id="linkedin-status">Stopped</div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accounts</span>
+                    <span class="stat-value" id="linkedin-accounts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="linkedin-active">0</span>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('linkedin')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('linkedin')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card" data-platform="pinterest">
+            <span class="platform-icon">📌</span>
+            <div class="platform-name">Pinterest</div>
+            <div class="platform-status" id="pinterest-status">Stopped</div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accounts</span>
+                    <span class="stat-value" id="pinterest-accounts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="pinterest-active">0</span>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('pinterest')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('pinterest')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card" data-platform="reddit">
+            <span class="platform-icon">🤖</span>
+            <div class="platform-name">Reddit</div>
+            <div class="platform-status" id="reddit-status">Stopped</div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accounts</span>
+                    <span class="stat-value" id="reddit-accounts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="reddit-active">0</span>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('reddit')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('reddit')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card" data-platform="discord">
+            <span class="platform-icon">💬</span>
+            <div class="platform-name">Discord</div>
+            <div class="platform-status" id="discord-status">Stopped</div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accounts</span>
+                    <span class="stat-value" id="discord-accounts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="discord-active">0</span>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('discord')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('discord')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card" data-platform="whatsapp">
+            <span class="platform-icon">📱</span>
+            <div class="platform-name">WhatsApp</div>
+            <div class="platform-status" id="whatsapp-status">Stopped</div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accounts</span>
+                    <span class="stat-value" id="whatsapp-accounts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="whatsapp-active">0</span>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('whatsapp')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('whatsapp')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card" data-platform="telegram">
+            <span class="platform-icon">✈️</span>
+            <div class="platform-name">Telegram</div>
+            <div class="platform-status" id="telegram-status">Stopped</div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accounts</span>
+                    <span class="stat-value" id="telegram-accounts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="telegram-active">0</span>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('telegram')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('telegram')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card" data-platform="snapchat">
+            <span class="platform-icon">👻</span>
+            <div class="platform-name">Snapchat</div>
+            <div class="platform-status" id="snapchat-status">Stopped</div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Accounts</span>
+                    <span class="stat-value" id="snapchat-accounts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="snapchat-active">0</span>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('snapchat')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('snapchat')">Manage</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="floating-btn" onclick="scrollToTop()" title="Scroll to top">↑</button>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let isRunning = false;
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function refreshStats() {
+            try {
+                const accountResponse = await fetch(`${API_BASE}/account/stats`);
+                if (accountResponse.ok) {
+                    const accountData = await accountResponse.json();
+                    document.getElementById('totalAccounts').textContent = accountData.totalAccounts || 0;
+                }
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+            }
+        }
+
+        function togglePlatform(platform) {
+            const statusElement = document.getElementById(`${platform}-status`);
+            const card = document.querySelector(`[data-platform="${platform}"]`);
+            const button = card.querySelector('.btn-primary');
+            
+            if (statusElement.textContent === 'Stopped') {
+                statusElement.textContent = 'Running';
+                statusElement.classList.add('running');
+                card.classList.add('running');
+                button.textContent = 'Stop';
+                isRunning = true;
+            } else {
+                statusElement.textContent = 'Stopped';
+                statusElement.classList.remove('running');
+                card.classList.remove('running');
+                button.textContent = 'Start';
+                isRunning = false;
+            }
+        }
+
+        function startAll() {
+            const platforms = ['facebook', 'instagram', 'tiktok', 'twitter', 'youtube', 'linkedin', 'pinterest', 'reddit', 'discord', 'whatsapp', 'telegram', 'snapchat'];
+            platforms.forEach(platform => {
+                const statusElement = document.getElementById(`${platform}-status`);
+                const card = document.querySelector(`[data-platform="${platform}"]`);
+                const button = card.querySelector('.btn-primary');
+                
+                if (statusElement.textContent === 'Stopped') {
+                    statusElement.textContent = 'Running';
+                    statusElement.classList.add('running');
+                    card.classList.add('running');
+                    button.textContent = 'Stop';
+                }
+            });
+            isRunning = true;
+        }
+
+        function stopAll() {
+            const platforms = ['facebook', 'instagram', 'tiktok', 'twitter', 'youtube', 'linkedin', 'pinterest', 'reddit', 'discord', 'whatsapp', 'telegram', 'snapchat'];
+            platforms.forEach(platform => {
+                const statusElement = document.getElementById(`${platform}-status`);
+                const card = document.querySelector(`[data-platform="${platform}"]`);
+                const button = card.querySelector('.btn-primary');
+                
+                statusElement.textContent = 'Stopped';
+                statusElement.classList.remove('running');
+                card.classList.remove('running');
+                button.textContent = 'Start';
+            });
+            isRunning = false;
+        }
+
+        function manageAccounts(platform) {
+            console.log(`Managing ${platform} accounts`);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshStats();
+            setInterval(refreshStats, 5000);
+        });
+    </script>
+</body>
+</html>

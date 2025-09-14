@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - MMO Tool</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #475569);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: white;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-gradient);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 20px;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .analytics-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analytics-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 4s infinite;
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .analytics-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .analytics-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .analytics-description {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .analytics-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .stat-item .stat-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-item .stat-value {
+            font-size: 1.3rem;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+
+        .analytics-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: var(--shadow-strong);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 35px rgba(79, 172, 254, 0.4);
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📈 Analytics Dashboard</h1>
+        <p>Track performance and growth across all platforms</p>
+    </div>
+
+    <div class="nav-tabs">
+        <a href="dashboard.html" class="nav-tab">
+            <span>📊</span> Dashboard
+        </a>
+        <a href="social-media.html" class="nav-tab">
+            <span>📱</span> Social Media
+        </a>
+        <a href="email-manager.html" class="nav-tab">
+            <span>📧</span> Email Manager
+        </a>
+        <a href="proxy-manager.html" class="nav-tab">
+            <span>🌐</span> Proxy Manager
+        </a>
+        <a href="analytics.html" class="nav-tab active">
+            <span>📈</span> Analytics
+        </a>
+        <a href="settings.html" class="nav-tab">
+            <span>⚙️</span> Settings
+        </a>
+    </div>
+
+    <div class="analytics-grid">
+        <div class="analytics-card">
+            <span class="analytics-icon">📊</span>
+            <div class="analytics-name">Account Growth</div>
+            <div class="analytics-description">Track account creation and growth rates</div>
+            <div class="analytics-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Created Today</span>
+                    <span class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Growth</span>
+                    <span class="stat-value">0%</span>
+                </div>
+            </div>
+            <div class="analytics-actions">
+                <button class="btn btn-primary" onclick="viewAccountGrowth()">View Chart</button>
+                <button class="btn btn-secondary" onclick="exportAccountData()">Export</button>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <span class="analytics-icon">💰</span>
+            <div class="analytics-name">Earnings Report</div>
+            <div class="analytics-description">Monitor earnings from all platforms</div>
+            <div class="analytics-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Today</span>
+                    <span class="stat-value">$0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">This Month</span>
+                    <span class="stat-value">$0</span>
+                </div>
+            </div>
+            <div class="analytics-actions">
+                <button class="btn btn-primary" onclick="viewEarningsChart()">View Chart</button>
+                <button class="btn btn-secondary" onclick="exportEarningsData()">Export</button>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <span class="analytics-icon">⚡</span>
+            <div class="analytics-name">Job Performance</div>
+            <div class="analytics-description">Analyze job completion rates</div>
+            <div class="analytics-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Completed</span>
+                    <span class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Success Rate</span>
+                    <span class="stat-value">0%</span>
+                </div>
+            </div>
+            <div class="analytics-actions">
+                <button class="btn btn-primary" onclick="viewJobPerformance()">View Chart</button>
+                <button class="btn btn-secondary" onclick="exportJobData()">Export</button>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <span class="analytics-icon">🌐</span>
+            <div class="analytics-name">Proxy Analytics</div>
+            <div class="analytics-description">Monitor proxy performance and usage</div>
+            <div class="analytics-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Success Rate</span>
+                    <span class="stat-value">0%</span>
+                </div>
+            </div>
+            <div class="analytics-actions">
+                <button class="btn btn-primary" onclick="viewProxyAnalytics()">View Chart</button>
+                <button class="btn btn-secondary" onclick="exportProxyData()">Export</button>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <span class="analytics-icon">📧</span>
+            <div class="analytics-name">Email Analytics</div>
+            <div class="analytics-description">Track email creation and verification</div>
+            <div class="analytics-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Created</span>
+                    <span class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Verified</span>
+                    <span class="stat-value">0</span>
+                </div>
+            </div>
+            <div class="analytics-actions">
+                <button class="btn btn-primary" onclick="viewEmailAnalytics()">View Chart</button>
+                <button class="btn btn-secondary" onclick="exportEmailData()">Export</button>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <span class="analytics-icon">📱</span>
+            <div class="analytics-name">Platform Stats</div>
+            <div class="analytics-description">Compare performance across platforms</div>
+            <div class="analytics-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Platforms</span>
+                    <span class="stat-value">12</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value">0</span>
+                </div>
+            </div>
+            <div class="analytics-actions">
+                <button class="btn btn-primary" onclick="viewPlatformStats()">View Chart</button>
+                <button class="btn btn-secondary" onclick="exportPlatformData()">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="floating-btn" onclick="scrollToTop()" title="Scroll to top">↑</button>
+
+    <script>
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function viewAccountGrowth() {
+            console.log('Viewing account growth chart');
+        }
+
+        function exportAccountData() {
+            console.log('Exporting account data');
+        }
+
+        function viewEarningsChart() {
+            console.log('Viewing earnings chart');
+        }
+
+        function exportEarningsData() {
+            console.log('Exporting earnings data');
+        }
+
+        function viewJobPerformance() {
+            console.log('Viewing job performance chart');
+        }
+
+        function exportJobData() {
+            console.log('Exporting job data');
+        }
+
+        function viewProxyAnalytics() {
+            console.log('Viewing proxy analytics chart');
+        }
+
+        function exportProxyData() {
+            console.log('Exporting proxy data');
+        }
+
+        function viewEmailAnalytics() {
+            console.log('Viewing email analytics chart');
+        }
+
+        function exportEmailData() {
+            console.log('Exporting email data');
+        }
+
+        function viewPlatformStats() {
+            console.log('Viewing platform stats chart');
+        }
+
+        function exportPlatformData() {
+            console.log('Exporting platform data');
+        }
+    </script>
+</body>
+</html>

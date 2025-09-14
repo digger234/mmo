@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMO Tool - Social Media Manager</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #475569);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: white;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 2rem 2rem 1.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0 3rem 0;
+            flex-wrap: wrap;
+            padding: 0 2rem;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-gradient);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin: 3rem auto;
+            max-width: 1600px;
+            padding: 0 2rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: morphing 4s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: var(--shadow-strong);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        .platform-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .platform-status.running {
+            color: #10b981;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .platform-status.stopped {
+            color: #ef4444;
+        }
+
+        .stat-card p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin: 3rem auto;
+            max-width: 1800px;
+            padding: 0 2rem;
+        }
+
+        .platform-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 2rem;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: morphing 4s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .platform-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .platform-card:hover::before {
+            left: 100%;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-strong);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .platform-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .platform-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .platform-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-running {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .status-stopped {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .platform-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .stat-item .number {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .stat-item .label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .platform-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            color: white;
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 4rem auto 3rem auto;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            padding: 0 2rem;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-strong);
+            transition: all 0.3s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .log-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            margin: 3rem auto;
+            max-width: 1600px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-soft);
+            animation: morphing 4s ease-in-out infinite;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .log-title-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .log-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+        }
+
+        .log-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            font-weight: 400;
+        }
+
+        .log-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .log-content {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .log-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .log-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .log-content::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 3px;
+        }
+
+        .log-entry {
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border-left: 4px solid var(--primary-gradient);
+            animation: slideInLeft 0.5s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .log-entry::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.02), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .log-entry:hover::before {
+            transform: translateX(100%);
+        }
+
+        .log-entry[data-type="success"] {
+            border-left-color: #4ade80;
+            background: rgba(74, 222, 128, 0.05);
+        }
+
+        .log-entry[data-type="error"] {
+            border-left-color: #f87171;
+            background: rgba(248, 113, 113, 0.05);
+        }
+
+        .log-entry[data-type="warning"] {
+            border-left-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.05);
+        }
+
+        .log-entry[data-type="info"] {
+            border-left-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.05);
+        }
+
+        .log-entry:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(10px) scale(1.02);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .log-entry:nth-child(even) {
+            animation: slideInRight 0.5s ease;
+        }
+
+        .log-icon {
+            font-size: 1.2em;
+            min-width: 24px;
+        }
+
+        .log-time {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            min-width: 140px;
+        }
+
+        .log-message {
+            color: white;
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .log-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+            text-align: center;
+            opacity: 0.6;
+        }
+
+        .log-placeholder-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .log-placeholder-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+        }
+
+        .log-placeholder-subtext {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .settings-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-btn:hover {
+            background: var(--primary-gradient);
+            transform: rotate(90deg);
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--glass-border);
+            padding: 2rem;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .settings-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            width: 30px;
+            height: 30px;
+            background: var(--danger-gradient);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .setting-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .setting-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .setting-description {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .toggle {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle.active {
+            background: var(--success-gradient);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .toggle.active::after {
+            transform: translateX(26px);
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            color: white;
+            box-shadow: var(--shadow-medium);
+            z-index: 1001;
+            animation: slideInDown 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(120, 119, 198, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(120, 119, 198, 0.6); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes morphing {
+            0%, 100% { border-radius: 25px; }
+            25% { border-radius: 30px; }
+            50% { border-radius: 20px; }
+            75% { border-radius: 35px; }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes progressFill {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes morphing {
+            0%, 100% { border-radius: 20px; }
+            50% { border-radius: 25px; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes slideInDown {
+            from { transform: translateX(-50%) translateY(-100%); }
+            to { transform: translateX(-50%) translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 2rem;
+            }
+            
+            .platforms-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-tabs {
+                gap: 1rem;
+                margin: 1.5rem 0 2rem 0;
+            }
+            
+            .nav-tab {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin: 2rem auto;
+            }
+            
+            .platforms-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin: 2rem auto;
+            }
+            
+            .controls {
+                gap: 1rem;
+                margin: 3rem auto 2rem auto;
+            }
+            
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .log-container {
+                margin: 2rem auto;
+                padding: 1.5rem;
+            }
+            
+            .settings-panel {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>MMO Tool - Social Media Manager</h1>
+        <p>All-in-One Social Media Management Platform</p>
+    </div>
+
+    <div class="nav-tabs">
+        <a href="dashboard.html" class="nav-tab active">
+            <span>📊</span> Dashboard
+        </a>
+        <a href="social-media.html" class="nav-tab">
+            <span>📱</span> Social Media
+        </a>
+        <a href="email-manager.html" class="nav-tab">
+            <span>📧</span> Email Manager
+        </a>
+        <a href="proxy-manager.html" class="nav-tab">
+            <span>🌐</span> Proxy Manager
+        </a>
+        <a href="analytics.html" class="nav-tab">
+            <span>📈</span> Analytics
+        </a>
+        <a href="settings.html" class="nav-tab">
+            <span>⚙️</span> Settings
+        </a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card fade-in">
+            <h3 id="totalAccounts">0</h3>
+            <p>Total Accounts</p>
+        </div>
+        <div class="stat-card fade-in">
+            <h3 id="totalEarnings">$0</h3>
+            <p>Total Earnings</p>
+        </div>
+        <div class="stat-card fade-in">
+            <h3 id="todayJobs">0</h3>
+            <p>Today Jobs</p>
+        </div>
+        <div class="stat-card fade-in">
+            <h3 id="activeModules">0</h3>
+            <p>Active Modules</p>
+        </div>
+    </div>
+
+    <div class="platforms-grid">
+        <div class="platform-card fade-in">
+            <div class="platform-header">
+                <div class="platform-name">
+                    <span>📘</span> Facebook
+                </div>
+                <div class="platform-status status-running">Running</div>
+            </div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Accounts</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Active</div>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('facebook')">Stop</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('facebook')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card fade-in">
+            <div class="platform-header">
+                <div class="platform-name">
+                    <span>📷</span> Instagram
+                </div>
+                <div class="platform-status status-running">Running</div>
+            </div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Accounts</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Active</div>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('instagram')">Stop</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('instagram')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card fade-in">
+            <div class="platform-header">
+                <div class="platform-name">
+                    <span>🎵</span> TikTok
+                </div>
+                <div class="platform-status status-stopped">Stopped</div>
+            </div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Accounts</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Active</div>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('tiktok')">Start</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('tiktok')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card fade-in">
+            <div class="platform-header">
+                <div class="platform-name">
+                    <span>🐦</span> Twitter
+                </div>
+                <div class="platform-status status-running">Running</div>
+            </div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Accounts</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Active</div>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="togglePlatform('twitter')">Stop</button>
+                <button class="btn btn-secondary btn-small" onclick="manageAccounts('twitter')">Manage</button>
+            </div>
+        </div>
+
+        <div class="platform-card fade-in">
+            <div class="platform-header">
+                <div class="platform-name">
+                    <span>📧</span> Email Manager
+                </div>
+                <div class="platform-status status-running">Running</div>
+            </div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Emails</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Verified</div>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="manageEmails()">Manage</button>
+                <button class="btn btn-secondary btn-small" onclick="createBulkEmails()">Create Bulk</button>
+            </div>
+        </div>
+
+        <div class="platform-card fade-in">
+            <div class="platform-header">
+                <div class="platform-name">
+                    <span>🌐</span> Proxy Manager
+                </div>
+                <div class="platform-status status-running">Running</div>
+            </div>
+            <div class="platform-stats">
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Proxies</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Active</div>
+                </div>
+            </div>
+            <div class="platform-actions">
+                <button class="btn btn-primary btn-small" onclick="manageProxies()">Manage</button>
+                <button class="btn btn-secondary btn-small" onclick="testAllProxies()">Test All</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-primary" onclick="startAll()">Start All</button>
+        <button class="btn btn-secondary" onclick="stopAll()">Stop All</button>
+        <button class="btn btn-secondary" onclick="refreshStats()">Refresh Stats</button>
+    </div>
+
+    <div class="log-container">
+        <div class="log-header">
+            <div class="log-title-section">
+                <h3 class="log-title">📋 Activity Log</h3>
+                <span class="log-subtitle">Real-time system events</span>
+            </div>
+            <div class="log-actions">
+                <button class="btn btn-icon" onclick="clearLog()" title="Clear all logs">
+                    🗑️
+                </button>
+                <button class="btn btn-icon" onclick="loadLogEntries()" title="Refresh logs">
+                    🔄
+                </button>
+            </div>
+        </div>
+        <div class="log-content" id="logContent">
+            <div class="log-placeholder">
+                <div class="log-placeholder-icon">📝</div>
+                <div class="log-placeholder-text">No activity yet</div>
+                <div class="log-placeholder-subtext">System events will appear here</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="floating-btn" onclick="scrollToTop()">↑</button>
+    <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h3 class="settings-title">Settings</h3>
+            <button class="close-btn" onclick="toggleSettings()">×</button>
+        </div>
+        
+        <div class="setting-item">
+            <label class="setting-label">Sound Effects</label>
+            <div class="setting-description">Enable sound notifications</div>
+            <div class="toggle" id="soundToggle" onclick="toggleSound()"></div>
+        </div>
+        
+        <div class="setting-item">
+            <label class="setting-label">Haptic Feedback</label>
+            <div class="setting-description">Enable vibration on interactions</div>
+            <div class="toggle" id="hapticToggle" onclick="toggleHaptic()"></div>
+        </div>
+        
+        <div class="setting-item">
+            <label class="setting-label">Particle Effects</label>
+            <div class="setting-description">Show animated particles</div>
+            <div class="toggle" id="particleToggle" onclick="toggleParticles()"></div>
+        </div>
+        
+        <div class="setting-item">
+            <label class="setting-label">Auto Refresh Rate</label>
+            <div class="setting-description">How often to refresh stats (seconds)</div>
+            <input type="range" class="slider" id="refreshRate" min="5" max="60" value="30" onchange="updateRefreshRate(this.value)">
+            <div style="text-align: center; margin-top: 5px; font-size: 0.8rem; color: rgba(255,255,255,0.7);" id="refreshRateValue">30s</div>
+        </div>
+    </div>
+
+    <script>
+        let soundEnabled = true;
+        let hapticEnabled = true;
+        let particlesEnabled = true;
+        let refreshInterval = 30000;
+        let refreshTimer;
+
+        function playSound() {
+            if (!soundEnabled) return;
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function vibrate() {
+            if (!hapticEnabled) return;
+            try {
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            } catch (e) {
+                console.log('Vibration not supported');
+            }
+        }
+
+        function createNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function togglePlatform(platform) {
+            const card = event.target.closest('.platform-card');
+            const status = card.querySelector('.platform-status');
+            const button = event.target;
+            
+            playSound();
+            vibrate();
+            
+            if (status.classList.contains('status-running')) {
+                status.textContent = 'Stopped';
+                status.className = 'platform-status status-stopped';
+                button.textContent = 'Start';
+                addLogEntry(`${platform} module stopped`);
+            } else {
+                status.textContent = 'Running';
+                status.className = 'platform-status status-running';
+                button.textContent = 'Stop';
+                addLogEntry(`${platform} module started`);
+            }
+        }
+
+        function manageAccounts(platform) {
+            playSound();
+            vibrate();
+            createNotification(`Opening ${platform} account manager...`);
+            addLogEntry(`Opening ${platform} account manager`);
+        }
+
+        function manageEmails() {
+            playSound();
+            vibrate();
+            createNotification('Opening email manager...');
+            addLogEntry('Opening email manager');
+        }
+
+        function manageProxies() {
+            playSound();
+            vibrate();
+            createNotification('Opening proxy manager...');
+            addLogEntry('Opening proxy manager');
+        }
+
+        function createBulkEmails() {
+            playSound();
+            vibrate();
+            createNotification('Creating bulk emails...');
+            addLogEntry('Creating 10 new email accounts');
+            updateEmailStats();
+        }
+
+        function testAllProxies() {
+            playSound();
+            vibrate();
+            createNotification('Testing all proxies...');
+            addLogEntry('Testing 89 proxies...');
+        }
+
+        function startAll() {
+            playSound();
+            vibrate();
+            const cards = document.querySelectorAll('.platform-card');
+            cards.forEach(card => {
+                const status = card.querySelector('.platform-status');
+                const button = card.querySelector('.btn-primary');
+                if (status.classList.contains('status-stopped')) {
+                    status.textContent = 'Running';
+                    status.className = 'platform-status status-running';
+                    button.textContent = 'Stop';
+                }
+            });
+            addLogEntry('All modules started');
+            createNotification('All modules started successfully!');
+        }
+
+        function stopAll() {
+            playSound();
+            vibrate();
+            const cards = document.querySelectorAll('.platform-card');
+            cards.forEach(card => {
+                const status = card.querySelector('.platform-status');
+                const button = card.querySelector('.btn-primary');
+                if (status.classList.contains('status-running')) {
+                    status.textContent = 'Stopped';
+                    status.className = 'platform-status status-stopped';
+                    button.textContent = 'Start';
+                }
+            });
+            addLogEntry('All modules stopped');
+            createNotification('All modules stopped');
+        }
+
+        async function refreshStats() {
+            try {
+                const response = await fetch('/api/account/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('totalAccounts').textContent = data.totalAccounts.toLocaleString();
+                    document.getElementById('activeAccounts').textContent = data.activeAccounts.toLocaleString();
+                } else {
+                    document.getElementById('totalAccounts').textContent = '0';
+                    document.getElementById('activeAccounts').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Error fetching account stats:', error);
+                document.getElementById('totalAccounts').textContent = '0';
+                document.getElementById('activeAccounts').textContent = '0';
+            }
+            
+            try {
+                const response = await fetch('/api/job/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('totalEarnings').textContent = '$' + data.totalEarnings.toLocaleString();
+                    document.getElementById('todayJobs').textContent = data.todayJobs.toLocaleString();
+                } else {
+                    document.getElementById('totalEarnings').textContent = '$0';
+                    document.getElementById('todayJobs').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Error fetching job stats:', error);
+                document.getElementById('totalEarnings').textContent = '$0';
+                document.getElementById('todayJobs').textContent = '0';
+            }
+            
+            try {
+                const response = await fetch('/api/mmo/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('activeModules').textContent = data.stats?.activeModules || '0';
+                } else {
+                    document.getElementById('activeModules').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Error fetching MMO stats:', error);
+                document.getElementById('activeModules').textContent = '0';
+            }
+        }
+
+        async function addLogEntry(message, type = 'info') {
+            try {
+                const response = await fetch('/api/log/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        type: type
+                    })
+                });
+                
+                if (response.ok) {
+                    await loadLogEntries();
+                }
+            } catch (error) {
+                console.error('Error adding log entry:', error);
+            }
+        }
+
+        async function loadLogEntries() {
+            try {
+                const response = await fetch('/api/log/entries');
+                if (response.ok) {
+                    const logs = await response.json();
+                    const logContent = document.getElementById('logContent');
+                    
+                    if (logs.length === 0) {
+                        logContent.innerHTML = `
+                            <div class="log-placeholder">
+                                <div class="log-placeholder-icon">📝</div>
+                                <div class="log-placeholder-text">No activity yet</div>
+                                <div class="log-placeholder-subtext">System events will appear here</div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    logContent.innerHTML = '';
+                    
+                    logs.forEach(log => {
+                        const logEntry = document.createElement('div');
+                        logEntry.className = 'log-entry fade-in';
+                        logEntry.setAttribute('data-type', log.type || 'info');
+                        const timeString = new Date(log.timestamp).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+                        
+                        logEntry.innerHTML = `
+                            <span class="log-icon">${log.icon}</span>
+                            <span class="log-time">${timeString}</span>
+                            <span class="log-message">${log.message}</span>
+                        `;
+                        
+                        logContent.appendChild(logEntry);
+                    });
+                    
+                    logContent.scrollTop = 0;
+                }
+            } catch (error) {
+                console.error('Error loading log entries:', error);
+            }
+        }
+
+        async function clearLog() {
+            playSound();
+            vibrate();
+            try {
+                const response = await fetch('/api/log/clear', {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    document.getElementById('logContent').innerHTML = '';
+                    await addLogEntry('Log cleared', 'info');
+                }
+            } catch (error) {
+                console.error('Error clearing logs:', error);
+                document.getElementById('logContent').innerHTML = '';
+                await addLogEntry('Log cleared', 'info');
+            }
+        }
+
+        function scrollToTop() {
+            playSound();
+            vibrate();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleSettings() {
+            playSound();
+            vibrate();
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('open');
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const toggle = document.getElementById('soundToggle');
+            toggle.classList.toggle('active', soundEnabled);
+            localStorage.setItem('soundEnabled', soundEnabled);
+            playSound();
+        }
+
+        function toggleHaptic() {
+            hapticEnabled = !hapticEnabled;
+            const toggle = document.getElementById('hapticToggle');
+            toggle.classList.toggle('active', hapticEnabled);
+            localStorage.setItem('hapticEnabled', hapticEnabled);
+            vibrate();
+        }
+
+        function toggleParticles() {
+            particlesEnabled = !particlesEnabled;
+            const toggle = document.getElementById('particleToggle');
+            toggle.classList.toggle('active', particlesEnabled);
+            localStorage.setItem('particlesEnabled', particlesEnabled);
+            
+            if (particlesEnabled) {
+                createParticleEffect();
+            }
+        }
+
+        function updateRefreshRate(value) {
+            refreshInterval = value * 1000;
+            document.getElementById('refreshRateValue').textContent = value + 's';
+            localStorage.setItem('refreshRate', value);
+            
+            if (refreshTimer) {
+                clearInterval(refreshTimer);
+            }
+            
+            refreshTimer = setInterval(refreshStats, refreshInterval);
+        }
+
+        function loadSettings() {
+            soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+            hapticEnabled = localStorage.getItem('hapticEnabled') !== 'false';
+            particlesEnabled = localStorage.getItem('particlesEnabled') !== 'false';
+            const savedRefreshRate = localStorage.getItem('refreshRate') || '30';
+            
+            document.getElementById('soundToggle').classList.toggle('active', soundEnabled);
+            document.getElementById('hapticToggle').classList.toggle('active', hapticEnabled);
+            document.getElementById('particleToggle').classList.toggle('active', particlesEnabled);
+            document.getElementById('refreshRate').value = savedRefreshRate;
+            document.getElementById('refreshRateValue').textContent = savedRefreshRate + 's';
+            
+            updateRefreshRate(savedRefreshRate);
+        }
+
+        function createParticleEffect() {
+            if (!particlesEnabled) return;
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.style.position = 'fixed';
+                    particle.style.width = '4px';
+                    particle.style.height = '4px';
+                    particle.style.background = 'rgba(255, 255, 255, 0.8)';
+                    particle.style.borderRadius = '50%';
+                    particle.style.pointerEvents = 'none';
+                    particle.style.zIndex = '1000';
+                    
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight;
+                    
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    
+                    document.body.appendChild(particle);
+                    
+                    particle.animate([
+                        { transform: 'translateY(0px) scale(1)', opacity: 1 },
+                        { transform: 'translateY(-100px) scale(0)', opacity: 0 }
+                    ], {
+                        duration: 2000,
+                        easing: 'ease-out'
+                    }).onfinish = () => particle.remove();
+                }, i * 100);
+            }
+        }
+
+        async function updatePlatformStats() {
+            try {
+                const response = await fetch('/api/account/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    const facebookCard = document.querySelector('.platform-card:nth-child(1)');
+                    const instagramCard = document.querySelector('.platform-card:nth-child(2)');
+                    const tiktokCard = document.querySelector('.platform-card:nth-child(3)');
+                    const twitterCard = document.querySelector('.platform-card:nth-child(4)');
+                    
+                    if (facebookCard) {
+                        const accounts = facebookCard.querySelector('.stat-item .number');
+                        const active = facebookCard.querySelectorAll('.stat-item .number')[1];
+                        if (accounts) accounts.textContent = data.facebookAccounts || '0';
+                        if (active) active.textContent = data.facebookActive || '0';
+                    }
+                    
+                    if (instagramCard) {
+                        const accounts = instagramCard.querySelector('.stat-item .number');
+                        const active = instagramCard.querySelectorAll('.stat-item .number')[1];
+                        if (accounts) accounts.textContent = data.instagramAccounts || '0';
+                        if (active) active.textContent = data.instagramActive || '0';
+                    }
+                    
+                    if (tiktokCard) {
+                        const accounts = tiktokCard.querySelector('.stat-item .number');
+                        const active = tiktokCard.querySelectorAll('.stat-item .number')[1];
+                        if (accounts) accounts.textContent = data.tiktokAccounts || '0';
+                        if (active) active.textContent = data.tiktokActive || '0';
+                    }
+                    
+                    if (twitterCard) {
+                        const accounts = twitterCard.querySelector('.stat-item .number');
+                        const active = twitterCard.querySelectorAll('.stat-item .number')[1];
+                        if (accounts) accounts.textContent = data.twitterAccounts || '0';
+                        if (active) active.textContent = data.twitterActive || '0';
+                    }
+                } else {
+                    const cards = document.querySelectorAll('.platform-card');
+                    cards.forEach(card => {
+                        const numbers = card.querySelectorAll('.stat-item .number');
+                        numbers.forEach(num => num.textContent = '0');
+                    });
+                }
+            } catch (error) {
+                console.error('Error updating platform stats:', error);
+                const cards = document.querySelectorAll('.platform-card');
+                cards.forEach(card => {
+                    const numbers = card.querySelectorAll('.stat-item .number');
+                    numbers.forEach(num => num.textContent = '0');
+                });
+            }
+        }
+
+        async function updateEmailStats() {
+            try {
+                const response = await fetch('/api/email/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    const emailCard = document.querySelector('.platform-card:nth-child(5)');
+                    if (emailCard) {
+                        const emails = emailCard.querySelector('.stat-item .number');
+                        const verified = emailCard.querySelectorAll('.stat-item .number')[1];
+                        if (emails) emails.textContent = data.totalEmails || '0';
+                        if (verified) verified.textContent = data.verifiedEmails || '0';
+                    }
+                } else {
+                    const emailCard = document.querySelector('.platform-card:nth-child(5)');
+                    if (emailCard) {
+                        const emails = emailCard.querySelector('.stat-item .number');
+                        const verified = emailCard.querySelectorAll('.stat-item .number')[1];
+                        if (emails) emails.textContent = '0';
+                        if (verified) verified.textContent = '0';
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating email stats:', error);
+                const emailCard = document.querySelector('.platform-card:nth-child(5)');
+                if (emailCard) {
+                    const emails = emailCard.querySelector('.stat-item .number');
+                    const verified = emailCard.querySelectorAll('.stat-item .number')[1];
+                    if (emails) emails.textContent = '0';
+                    if (verified) verified.textContent = '0';
+                }
+            }
+        }
+
+
+        function monitorPerformance() {
+            if ('performance' in window) {
+                window.addEventListener('load', () => {
+                    const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                    console.log(`Page load time: ${loadTime}ms`);
+                });
+            }
+        }
+
+        function handleErrors() {
+            window.addEventListener('error', (e) => {
+                console.error('JavaScript Error:', e.error);
+                createNotification('An error occurred. Check console for details.');
+            });
+            
+            window.addEventListener('unhandledrejection', (e) => {
+                console.error('Unhandled Promise Rejection:', e.reason);
+                createNotification('An error occurred. Check console for details.');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadSettings();
+            monitorPerformance();
+            handleErrors();
+            
+            if (particlesEnabled) {
+                createParticleEffect();
+            }
+            
+            await refreshStats();
+            await updatePlatformStats();
+            await updateEmailStats();
+            await loadLogEntries();
+            
+            await addLogEntry('MMO Tool Dashboard initialized', 'success');
+            await addLogEntry('All systems ready for operation', 'info');
+            
+            setInterval(async () => {
+                await refreshStats();
+                await updatePlatformStats();
+                await updateEmailStats();
+                await loadLogEntries();
+            }, 10000);
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey) {
+                    switch(e.key) {
+                        case 's':
+                            e.preventDefault();
+                            toggleSettings();
+                            break;
+                        case 'r':
+                            e.preventDefault();
+                            refreshStats();
+                            break;
+                        case 'm':
+                            e.preventDefault();
+                            startAll();
+                            break;
+                        case 'h':
+                            e.preventDefault();
+                            stopAll();
+                            break;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

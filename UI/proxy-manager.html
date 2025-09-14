@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Manager - MMO Tool</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #475569);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: white;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-gradient);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .proxy-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 20px;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .proxy-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .proxy-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 4s infinite;
+        }
+
+        .proxy-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .proxy-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .proxy-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .proxy-status {
+            font-size: 0.9rem;
+            color: #10b981;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .proxy-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .stat-item .stat-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-item .stat-value {
+            font-size: 1.3rem;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+
+        .proxy-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: var(--shadow-strong);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 35px rgba(79, 172, 254, 0.4);
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .proxy-types {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌐 Proxy Manager</h1>
+        <p>Manage and rotate proxies for all platforms</p>
+    </div>
+
+    <div class="nav-tabs">
+        <a href="dashboard.html" class="nav-tab">
+            <span>📊</span> Dashboard
+        </a>
+        <a href="social-media.html" class="nav-tab">
+            <span>📱</span> Social Media
+        </a>
+        <a href="email-manager.html" class="nav-tab">
+            <span>📧</span> Email Manager
+        </a>
+        <a href="proxy-manager.html" class="nav-tab active">
+            <span>🌐</span> Proxy Manager
+        </a>
+        <a href="analytics.html" class="nav-tab">
+            <span>📈</span> Analytics
+        </a>
+        <a href="settings.html" class="nav-tab">
+            <span>⚙️</span> Settings
+        </a>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-primary" onclick="addProxyList()">➕ Add Proxy List</button>
+        <button class="btn btn-success" onclick="testAllProxies()">🧪 Test All</button>
+        <button class="btn btn-danger" onclick="clearAllProxies()">🗑️ Clear All</button>
+    </div>
+
+    <div class="proxy-types">
+        <div class="proxy-card" data-type="http">
+            <span class="proxy-icon">🌐</span>
+            <div class="proxy-name">HTTP Proxies</div>
+            <div class="proxy-status">Ready</div>
+            <div class="proxy-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total</span>
+                    <span class="stat-value" id="http-total">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="http-active">0</span>
+                </div>
+            </div>
+            <div class="proxy-actions">
+                <button class="btn btn-primary btn-small" onclick="addHttpProxies()">Add</button>
+                <button class="btn btn-secondary btn-small" onclick="manageHttpProxies()">Manage</button>
+            </div>
+        </div>
+
+        <div class="proxy-card" data-type="socks5">
+            <span class="proxy-icon">🔒</span>
+            <div class="proxy-name">SOCKS5 Proxies</div>
+            <div class="proxy-status">Ready</div>
+            <div class="proxy-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total</span>
+                    <span class="stat-value" id="socks5-total">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="socks5-active">0</span>
+                </div>
+            </div>
+            <div class="proxy-actions">
+                <button class="btn btn-primary btn-small" onclick="addSocks5Proxies()">Add</button>
+                <button class="btn btn-secondary btn-small" onclick="manageSocks5Proxies()">Manage</button>
+            </div>
+        </div>
+
+        <div class="proxy-card" data-type="residential">
+            <span class="proxy-icon">🏠</span>
+            <div class="proxy-name">Residential Proxies</div>
+            <div class="proxy-status">Ready</div>
+            <div class="proxy-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total</span>
+                    <span class="stat-value" id="residential-total">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="residential-active">0</span>
+                </div>
+            </div>
+            <div class="proxy-actions">
+                <button class="btn btn-primary btn-small" onclick="addResidentialProxies()">Add</button>
+                <button class="btn btn-secondary btn-small" onclick="manageResidentialProxies()">Manage</button>
+            </div>
+        </div>
+
+        <div class="proxy-card" data-type="datacenter">
+            <span class="proxy-icon">🏢</span>
+            <div class="proxy-name">Datacenter Proxies</div>
+            <div class="proxy-status">Ready</div>
+            <div class="proxy-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total</span>
+                    <span class="stat-value" id="datacenter-total">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="datacenter-active">0</span>
+                </div>
+            </div>
+            <div class="proxy-actions">
+                <button class="btn btn-primary btn-small" onclick="addDatacenterProxies()">Add</button>
+                <button class="btn btn-secondary btn-small" onclick="manageDatacenterProxies()">Manage</button>
+            </div>
+        </div>
+
+        <div class="proxy-card" data-type="mobile">
+            <span class="proxy-icon">📱</span>
+            <div class="proxy-name">Mobile Proxies</div>
+            <div class="proxy-status">Ready</div>
+            <div class="proxy-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total</span>
+                    <span class="stat-value" id="mobile-total">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="mobile-active">0</span>
+                </div>
+            </div>
+            <div class="proxy-actions">
+                <button class="btn btn-primary btn-small" onclick="addMobileProxies()">Add</button>
+                <button class="btn btn-secondary btn-small" onclick="manageMobileProxies()">Manage</button>
+            </div>
+        </div>
+
+        <div class="proxy-card" data-type="rotating">
+            <span class="proxy-icon">🔄</span>
+            <div class="proxy-name">Rotating Proxies</div>
+            <div class="proxy-status">Ready</div>
+            <div class="proxy-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Pools</span>
+                    <span class="stat-value" id="rotating-pools">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="rotating-active">0</span>
+                </div>
+            </div>
+            <div class="proxy-actions">
+                <button class="btn btn-primary btn-small" onclick="addRotatingProxies()">Add</button>
+                <button class="btn btn-secondary btn-small" onclick="manageRotatingProxies()">Manage</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="floating-btn" onclick="scrollToTop()" title="Scroll to top">↑</button>
+
+    <script>
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function addProxyList() {
+            console.log('Adding proxy list');
+        }
+
+        function testAllProxies() {
+            console.log('Testing all proxies');
+        }
+
+        function clearAllProxies() {
+            console.log('Clearing all proxies');
+        }
+
+        function addHttpProxies() {
+            console.log('Adding HTTP proxies');
+        }
+
+        function manageHttpProxies() {
+            console.log('Managing HTTP proxies');
+        }
+
+        function addSocks5Proxies() {
+            console.log('Adding SOCKS5 proxies');
+        }
+
+        function manageSocks5Proxies() {
+            console.log('Managing SOCKS5 proxies');
+        }
+
+        function addResidentialProxies() {
+            console.log('Adding residential proxies');
+        }
+
+        function manageResidentialProxies() {
+            console.log('Managing residential proxies');
+        }
+
+        function addDatacenterProxies() {
+            console.log('Adding datacenter proxies');
+        }
+
+        function manageDatacenterProxies() {
+            console.log('Managing datacenter proxies');
+        }
+
+        function addMobileProxies() {
+            console.log('Adding mobile proxies');
+        }
+
+        function manageMobileProxies() {
+            console.log('Managing mobile proxies');
+        }
+
+        function addRotatingProxies() {
+            console.log('Adding rotating proxies');
+        }
+
+        function manageRotatingProxies() {
+            console.log('Managing rotating proxies');
+        }
+    </script>
+</body>
+</html>
