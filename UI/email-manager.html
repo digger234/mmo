@@ -25,7 +25,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #475569);
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe);
             background-size: 400% 400%;
             animation: gradientShift 15s ease infinite;
             color: white;
@@ -310,12 +310,333 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+
+        .light-theme {
+            background: linear-gradient(-45deg, #f8fafc, #e2e8f0, #cbd5e1, #94a3b8, #f1f5f9, #e2e8f0);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: #1e293b;
+        }
+
+        .header-controls {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: var(--glass-border);
+            transform: scale(1.1);
+        }
+
+        .settings-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-btn:hover {
+            background: var(--glass-border);
+            transform: scale(1.1);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .light-theme .theme-toggle,
+        .light-theme .settings-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+
+        .light-theme .theme-toggle:hover,
+        .light-theme .settings-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .light-theme .status-indicator {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+
+        .light-theme .header h1 {
+            color: #1e293b;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .light-theme .header p {
+            color: #475569;
+        }
+
+        .light-theme .email-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            color: #1e293b;
+        }
+
+        .light-theme .email-provider {
+            color: #1e293b;
+        }
+
+        .light-theme .stat-item .number {
+            color: #1e293b;
+        }
+
+        .light-theme .stat-item .label {
+            color: #64748b;
+        }
+
+        .light-theme .btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+
+        .light-theme .btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .light-theme .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .light-theme .btn-secondary {
+            background: rgba(100, 116, 139, 0.1);
+            color: #475569;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+        }
+
+        .light-theme .nav-tab {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+
+        .light-theme .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .light-theme .nav-tab.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--glass-border);
+            padding: 2rem;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .settings-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            width: 30px;
+            height: 30px;
+            background: var(--danger-gradient);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .setting-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .setting-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .setting-description {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1rem;
+        }
+
+        .toggle {
+            width: 50px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle.active {
+            background: var(--success-gradient);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle.active::after {
+            transform: translateX(25px);
+        }
+
+        .slider {
+            width: 100%;
+            height: 5px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            cursor: pointer;
+        }
+
+        .light-theme .settings-panel {
+            background: rgba(255, 255, 255, 0.9);
+            border-left: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .light-theme .settings-title {
+            color: #1e293b;
+        }
+
+        .light-theme .setting-item {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .light-theme .setting-label {
+            color: #1e293b;
+        }
+
+        .light-theme .setting-description {
+            color: #64748b;
+        }
+
+        .light-theme .toggle {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .light-theme .slider {
+            background: rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>📧 Email Manager</h1>
         <p>Create and manage email accounts for all platforms</p>
+        <div class="header-controls">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>System Online</span>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                🌙
+            </button>
+            <button class="settings-btn" onclick="toggleSettings()" title="Settings">
+                ⚙️
+            </button>
+        </div>
     </div>
 
     <div class="nav-tabs">
@@ -501,6 +822,154 @@
         function manageCustomEmails() {
             console.log('Managing custom emails');
         }
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggle = document.querySelector('.theme-toggle');
+            
+            if (body.classList.contains('light-theme')) {
+                body.classList.remove('light-theme');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.add('light-theme');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeToggle = document.querySelector('.theme-toggle');
+            
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+                themeToggle.textContent = '☀️';
+            }
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('open');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+        });
+    </script>
+
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h3 class="settings-title">Settings</h3>
+            <button class="close-btn" onclick="toggleSettings()">×</button>
+        </div>
+        
+        <div class="setting-item">
+            <label class="setting-label">Sound Effects</label>
+            <div class="setting-description">Enable sound notifications</div>
+            <div class="toggle" id="soundToggle" onclick="toggleSound()"></div>
+        </div>
+        
+        <div class="setting-item">
+            <label class="setting-label">Haptic Feedback</label>
+            <div class="setting-description">Enable vibration on interactions</div>
+            <div class="toggle" id="hapticToggle" onclick="toggleHaptic()"></div>
+        </div>
+        
+        <div class="setting-item">
+            <label class="setting-label">Particle Effects</label>
+            <div class="setting-description">Show animated particles</div>
+            <div class="toggle" id="particleToggle" onclick="toggleParticles()"></div>
+        </div>
+        
+        <div class="setting-item">
+            <label class="setting-label">Auto Refresh Rate</label>
+            <div class="setting-description">How often to refresh stats (seconds)</div>
+            <input type="range" class="slider" id="refreshRate" min="5" max="60" value="30" onchange="updateRefreshRate(this.value)">
+            <div style="text-align: center; margin-top: 5px; font-size: 0.8rem; color: rgba(255,255,255,0.7);" id="refreshRateValue">30s</div>
+        </div>
+    </div>
+
+    <script>
+        let soundEnabled = true;
+        let hapticEnabled = true;
+        let particlesEnabled = true;
+
+        function playSound() {
+            if (!soundEnabled) return;
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function vibrate() {
+            if (!hapticEnabled) return;
+            try {
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            } catch (e) {
+                console.log('Vibration not supported');
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const toggle = document.getElementById('soundToggle');
+            toggle.classList.toggle('active', soundEnabled);
+            localStorage.setItem('soundEnabled', soundEnabled);
+        }
+
+        function toggleHaptic() {
+            hapticEnabled = !hapticEnabled;
+            const toggle = document.getElementById('hapticToggle');
+            toggle.classList.toggle('active', hapticEnabled);
+            localStorage.setItem('hapticEnabled', hapticEnabled);
+        }
+
+        function toggleParticles() {
+            particlesEnabled = !particlesEnabled;
+            const toggle = document.getElementById('particleToggle');
+            toggle.classList.toggle('active', particlesEnabled);
+            localStorage.setItem('particlesEnabled', particlesEnabled);
+        }
+
+        function updateRefreshRate(value) {
+            document.getElementById('refreshRateValue').textContent = value + 's';
+            localStorage.setItem('refreshRate', value);
+        }
+
+        function loadSettings() {
+            soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+            hapticEnabled = localStorage.getItem('hapticEnabled') !== 'false';
+            particlesEnabled = localStorage.getItem('particlesEnabled') !== 'false';
+            
+            document.getElementById('soundToggle').classList.toggle('active', soundEnabled);
+            document.getElementById('hapticToggle').classList.toggle('active', hapticEnabled);
+            document.getElementById('particleToggle').classList.toggle('active', particlesEnabled);
+            
+            const refreshRate = localStorage.getItem('refreshRate') || '30';
+            document.getElementById('refreshRate').value = refreshRate;
+            document.getElementById('refreshRateValue').textContent = refreshRate + 's';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+        });
     </script>
 </body>
 </html>
