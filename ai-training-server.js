@@ -452,6 +452,292 @@ class AITrainingServer {
         console.log(`🔄 Discord knowledge merged successfully`);
     }
     
+    async learnFromWeb(topic) {
+        try {
+            console.log(`🌐 Learning from web about: ${topic}`);
+            
+            const webKnowledge = await this.fetchWebKnowledge(topic);
+            if (webKnowledge && webKnowledge.length > 0) {
+                this.processWebKnowledge(topic, webKnowledge);
+                console.log(`✅ Learned ${webKnowledge.length} facts from web about ${topic}`);
+            } else {
+                console.log(`⚠️ No web knowledge found for ${topic}`);
+            }
+        } catch (error) {
+            console.error(`❌ Error learning from web about ${topic}:`, error);
+        }
+    }
+    
+    async fetchWebKnowledge(topic) {
+        const knowledge = [];
+        
+        try {
+            // Wikipedia learning
+            const wikiData = await this.fetchFromWikipedia(topic);
+            if (wikiData) knowledge.push(...wikiData);
+            
+            // News learning
+            const newsData = await this.fetchFromNews(topic);
+            if (newsData) knowledge.push(...newsData);
+            
+            // Reddit learning (for real conversations)
+            const redditData = await this.fetchFromReddit(topic);
+            if (redditData) knowledge.push(...redditData);
+            
+            // YouTube learning (for educational content)
+            const youtubeData = await this.fetchFromYouTube(topic);
+            if (youtubeData) knowledge.push(...youtubeData);
+            
+            // Conversation patterns learning
+            const conversationData = await this.fetchConversationPatterns(topic);
+            if (conversationData) knowledge.push(...conversationData);
+            
+        } catch (error) {
+            console.error('Error fetching web knowledge:', error);
+        }
+        
+        return knowledge;
+    }
+    
+    async fetchFromWikipedia(topic) {
+        try {
+            const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(topic)}`);
+            if (!response.ok) return null;
+            
+            const data = await response.json();
+            const knowledge = [];
+            
+            if (data.extract) {
+                knowledge.push({
+                    type: 'fact',
+                    content: data.extract,
+                    source: 'Wikipedia',
+                    topic: topic,
+                    timestamp: Date.now()
+                });
+            }
+            
+            if (data.description) {
+                knowledge.push({
+                    type: 'fact',
+                    content: data.description,
+                    source: 'Wikipedia',
+                    topic: topic,
+                    timestamp: Date.now()
+                });
+            }
+            
+            return knowledge;
+        } catch (error) {
+            console.error('Wikipedia fetch error:', error);
+            return null;
+        }
+    }
+    
+    async fetchFromNews(topic) {
+        try {
+            // Using a free news API (you can replace with your preferred API)
+            const response = await fetch(`https://newsapi.org/v2/everything?q=${encodeURIComponent(topic)}&sortBy=publishedAt&pageSize=5&apiKey=YOUR_NEWS_API_KEY`);
+            if (!response.ok) return null;
+            
+            const data = await response.json();
+            const knowledge = [];
+            
+            if (data.articles) {
+                data.articles.forEach(article => {
+                    if (article.title && article.description) {
+                        knowledge.push({
+                            type: 'fact',
+                            content: `${article.title}: ${article.description}`,
+                            source: 'News',
+                            topic: topic,
+                            timestamp: Date.now()
+                        });
+                    }
+                });
+            }
+            
+            return knowledge;
+        } catch (error) {
+            console.error('News fetch error:', error);
+            return null;
+        }
+    }
+    
+    async fetchConversationPatterns(topic) {
+        try {
+            // Generate conversation patterns based on topic
+            const patterns = this.generateConversationPatterns(topic);
+            return patterns;
+        } catch (error) {
+            console.error('Conversation patterns error:', error);
+            return null;
+        }
+    }
+    
+    generateConversationPatterns(topic) {
+        const patterns = [];
+        
+        // Natural conversation starters
+        patterns.push({
+            type: 'conversation_starter',
+            content: `I'd love to discuss ${topic} with you. What aspects interest you most?`,
+            topic: topic,
+            timestamp: Date.now()
+        });
+        
+        // Question patterns
+        patterns.push({
+            type: 'question_pattern',
+            content: `What do you think about the latest developments in ${topic}?`,
+            topic: topic,
+            timestamp: Date.now()
+        });
+        
+        // Explanation patterns
+        patterns.push({
+            type: 'explanation_pattern',
+            content: `Let me explain ${topic} in a way that's easy to understand...`,
+            topic: topic,
+            timestamp: Date.now()
+        });
+        
+        // Engagement patterns
+        patterns.push({
+            type: 'engagement_pattern',
+            content: `That's a fascinating question about ${topic}! I'm excited to explore this with you.`,
+            topic: topic,
+            timestamp: Date.now()
+        });
+        
+        // Empathy patterns
+        patterns.push({
+            type: 'empathy_pattern',
+            content: `I understand your interest in ${topic}. It's a complex subject that many people find challenging.`,
+            topic: topic,
+            timestamp: Date.now()
+        });
+        
+        return patterns;
+    }
+    
+    async fetchFromReddit(topic) {
+        try {
+            // Reddit API for real conversations
+            const response = await fetch(`https://www.reddit.com/r/${topic}/hot.json?limit=10`);
+            if (!response.ok) return null;
+            
+            const data = await response.json();
+            const knowledge = [];
+            
+            if (data.data && data.data.children) {
+                data.data.children.forEach(post => {
+                    if (post.data.title && post.data.selftext) {
+                        knowledge.push({
+                            type: 'conversation_starter',
+                            content: post.data.title,
+                            source: 'Reddit',
+                            topic: topic,
+                            timestamp: Date.now()
+                        });
+                        
+                        if (post.data.selftext.length > 50) {
+                            knowledge.push({
+                                type: 'explanation_pattern',
+                                content: post.data.selftext.substring(0, 200) + '...',
+                                source: 'Reddit',
+                                topic: topic,
+                                timestamp: Date.now()
+                            });
+                        }
+                    }
+                });
+            }
+            
+            return knowledge;
+        } catch (error) {
+            console.error('Reddit fetch error:', error);
+            return null;
+        }
+    }
+    
+    async fetchFromYouTube(topic) {
+        try {
+            // YouTube API for educational content
+            const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(topic)}&type=video&maxResults=5&key=YOUR_YOUTUBE_API_KEY`);
+            if (!response.ok) return null;
+            
+            const data = await response.json();
+            const knowledge = [];
+            
+            if (data.items) {
+                data.items.forEach(video => {
+                    if (video.snippet.title && video.snippet.description) {
+                        knowledge.push({
+                            type: 'conversation_starter',
+                            content: `I found this interesting video about ${topic}: ${video.snippet.title}`,
+                            source: 'YouTube',
+                            topic: topic,
+                            timestamp: Date.now()
+                        });
+                        
+                        knowledge.push({
+                            type: 'explanation_pattern',
+                            content: video.snippet.description,
+                            source: 'YouTube',
+                            topic: topic,
+                            timestamp: Date.now()
+                        });
+                    }
+                });
+            }
+            
+            return knowledge;
+        } catch (error) {
+            console.error('YouTube fetch error:', error);
+            return null;
+        }
+    }
+    
+    processWebKnowledge(topic, knowledge) {
+        if (!this.knowledgeBase[topic]) {
+            this.knowledgeBase[topic] = {
+                facts: [],
+                patterns: [],
+                responses: [],
+                examples: [],
+                lastUpdated: Date.now()
+            };
+        }
+        
+        knowledge.forEach(item => {
+            switch(item.type) {
+                case 'fact':
+                    if (this.isKnowledgeNew(item.content, 'fact')) {
+                        this.knowledgeBase[topic].facts.push(item.content);
+                        this.learnedFacts.add(item.content);
+                        this.addNewKnowledge(item.content, 'fact');
+                    }
+                    break;
+                    
+                case 'conversation_starter':
+                case 'question_pattern':
+                case 'explanation_pattern':
+                case 'engagement_pattern':
+                case 'empathy_pattern':
+                    if (this.isKnowledgeNew(item.content, 'response')) {
+                        this.knowledgeBase[topic].responses.push(item.content);
+                        this.learnedResponses.add(item.content);
+                        this.addNewKnowledge(item.content, 'response');
+                    }
+                    break;
+            }
+        });
+        
+        this.knowledgeBase[topic].lastUpdated = Date.now();
+        this.learnedTopics.add(topic);
+    }
+    
     savePersistentData() {
         try {
             const fs = require('fs');
@@ -591,8 +877,8 @@ class AITrainingServer {
         this.isTraining = true;
         console.log('🧠 Starting 24/7 AI Training...');
         
-        setInterval(() => {
-            this.performTraining();
+        setInterval(async () => {
+            await this.performTraining();
         }, 60000);
         
         setInterval(() => {
@@ -608,7 +894,7 @@ class AITrainingServer {
         }, 120000);
     }
     
-    performTraining() {
+    async performTraining() {
         console.log('🔄 Performing advanced training session...');
         
         const trainingTypes = [
@@ -621,7 +907,7 @@ class AITrainingServer {
         
         switch(randomType) {
             case 'knowledge':
-                this.trainOnKnowledge();
+                await this.trainOnKnowledge();
                 break;
             case 'conversation':
                 this.trainConversationPatterns();
@@ -695,137 +981,31 @@ class AITrainingServer {
         this.knowledgePoints += knowledge.facts.length;
     }
     
-    generateKnowledgeForTopic(topic, customData) {
-        const knowledge = {
-            facts: [],
-            patterns: [],
-            responses: [],
-            examples: []
+    async generateKnowledgeForTopic(topic, customData) {
+        // Learn from web instead of generating fake data
+        await this.learnFromWeb(topic);
+        
+        return {
+            facts: this.knowledgeBase[topic]?.facts || [],
+            patterns: this.knowledgeBase[topic]?.patterns || [],
+            responses: this.knowledgeBase[topic]?.responses || [],
+            examples: this.knowledgeBase[topic]?.examples || []
         };
-        
-        const newFacts = this.generateNewFacts(topic);
-        const newPatterns = this.generateNewPatterns(topic);
-        const newResponses = this.generateNewResponses(topic);
-        
-        knowledge.facts = newFacts;
-        knowledge.patterns = newPatterns;
-        knowledge.responses = newResponses;
-        
-        switch(topic) {
-            case 'programming':
-                const programmingFacts = [
-                    'JavaScript is a versatile programming language',
-                    'Python is great for data science and AI',
-                    'React is a popular frontend framework',
-                    'Node.js allows JavaScript to run on servers'
-                ];
-                const programmingPatterns = [
-                    'if (condition) { code }',
-                    'function name() { return value; }',
-                    'const variable = value;',
-                    'for (let i = 0; i < length; i++) { }'
-                ];
-                const programmingResponses = [
-                    'I can help you with programming questions',
-                    'Let me explain this code concept',
-                    'Here\'s how to solve this programming problem'
-                ];
-                
-                knowledge.facts = this.filterNewKnowledge(programmingFacts, 'fact');
-                knowledge.patterns = this.filterNewKnowledge(programmingPatterns, 'pattern');
-                knowledge.responses = this.filterNewKnowledge(programmingResponses, 'response');
-                break;
-                
-            case 'mathematics':
-                knowledge.facts = [
-                    'Algebra is the foundation of advanced math',
-                    'Calculus deals with rates of change',
-                    'Geometry studies shapes and spaces',
-                    'Statistics analyzes data patterns'
-                ];
-                knowledge.patterns = [
-                    'y = mx + b (linear equation)',
-                    'a² + b² = c² (Pythagorean theorem)',
-                    'E = mc² (Einstein\'s equation)',
-                    'π ≈ 3.14159 (pi constant)'
-                ];
-                knowledge.responses = [
-                    'Let me solve this math problem step by step',
-                    'Here\'s the mathematical explanation',
-                    'I can help you understand this concept'
-                ];
-                break;
-                
-            case 'science':
-                knowledge.facts = [
-                    'Photosynthesis converts light to energy',
-                    'DNA contains genetic information',
-                    'Gravity pulls objects toward each other',
-                    'Atoms are the building blocks of matter'
-                ];
-                knowledge.patterns = [
-                    'Observation → Hypothesis → Experiment → Conclusion',
-                    'Cause and effect relationships',
-                    'Scientific method process',
-                    'Peer review validation'
-                ];
-                knowledge.responses = [
-                    'Let me explain this scientific concept',
-                    'Here\'s the scientific explanation',
-                    'I can help you understand this phenomenon'
-                ];
-                break;
-                
-            default:
-                knowledge.facts = [
-                    `${topic} is an interesting subject`,
-                    `There are many aspects to ${topic}`,
-                    `${topic} has practical applications`,
-                    `Learning about ${topic} is valuable`
-                ];
-                knowledge.patterns = [
-                    `Understanding ${topic} requires study`,
-                    `${topic} involves multiple concepts`,
-                    `Practical application of ${topic}`,
-                    `Advanced topics in ${topic}`
-                ];
-                knowledge.responses = [
-                    `I can help you with ${topic} questions`,
-                    `Let me explain ${topic} concepts`,
-                    `Here's information about ${topic}`
-                ];
-        }
-        
-        if (customData) {
-            knowledge.facts.push(...customData.facts || []);
-            knowledge.patterns.push(...customData.patterns || []);
-            knowledge.responses.push(...customData.responses || []);
-            knowledge.examples.push(...customData.examples || []);
-        }
-        
-        return knowledge;
     }
     
-    trainOnKnowledge() {
+    async trainOnKnowledge() {
         const topics = [
-            'programming', 'mathematics', 'science', 'history', 
-            'technology', 'business', 'health', 'education',
-            'entertainment', 'sports', 'travel', 'food',
-            'psychology', 'philosophy', 'art', 'music',
-            'literature', 'culture', 'language', 'communication',
-            'artificial_intelligence', 'machine_learning', 'data_science',
-            'cybersecurity', 'blockchain', 'quantum_computing',
+            'artificial_intelligence', 'machine_learning', 'programming', 'technology',
+            'science', 'mathematics', 'psychology', 'philosophy', 'history',
+            'business', 'health', 'education', 'entertainment', 'sports',
+            'travel', 'food', 'art', 'music', 'literature', 'culture',
+            'communication', 'neuroscience', 'biotechnology', 'robotics',
             'space_exploration', 'climate_change', 'sustainability',
-            'neuroscience', 'biotechnology', 'robotics'
+            'cybersecurity', 'blockchain', 'quantum_computing'
         ];
         
-        const unlearnedTopics = topics.filter(topic => !this.learnedTopics.has(topic));
-        const topicToLearn = unlearnedTopics.length > 0 
-            ? unlearnedTopics[Math.floor(Math.random() * unlearnedTopics.length)]
-            : this.generateNewTopic();
-            
-        this.trainOnTopic(topicToLearn);
-        this.learnedTopics.add(topicToLearn);
+        const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+        await this.learnFromWeb(randomTopic);
     }
     
     generateNewTopic() {
@@ -876,75 +1056,7 @@ class AITrainingServer {
         }
     }
     
-    generateNewFacts(topic) {
-        const factTemplates = [
-            `${topic} is evolving rapidly with new innovations`,
-            `Advanced techniques in ${topic} are being developed`,
-            `Modern applications of ${topic} are expanding`,
-            `Future trends in ${topic} show great promise`,
-            `Cutting-edge research in ${topic} is ongoing`,
-            `Next-generation ${topic} technologies are emerging`,
-            `Revolutionary approaches to ${topic} are being explored`,
-            `Innovative solutions in ${topic} are being created`,
-            `Breakthrough discoveries in ${topic} are happening`,
-            `Emerging patterns in ${topic} are being identified`
-        ];
-        
-        const timestamp = Date.now().toString().slice(-6);
-        const randomFacts = factTemplates
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 3)
-            .map(fact => `${fact} (${timestamp})`);
-            
-        return this.filterNewKnowledge(randomFacts, 'fact');
-    }
-    
-    generateNewPatterns(topic) {
-        const patternTemplates = [
-            `Advanced ${topic} pattern: ${this.generateRandomPattern()}`,
-            `Modern ${topic} approach: ${this.generateRandomPattern()}`,
-            `Future ${topic} method: ${this.generateRandomPattern()}`,
-            `Next-gen ${topic} technique: ${this.generateRandomPattern()}`,
-            `Cutting-edge ${topic} strategy: ${this.generateRandomPattern()}`
-        ];
-        
-        const timestamp = Date.now().toString().slice(-6);
-        const randomPatterns = patternTemplates
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 2)
-            .map(pattern => `${pattern} (${timestamp})`);
-            
-        return this.filterNewKnowledge(randomPatterns, 'pattern');
-    }
-    
-    generateNewResponses(topic) {
-        const responseTemplates = [
-            `I can help you with advanced ${topic} concepts`,
-            `Let me explain modern ${topic} approaches`,
-            `Here's how to apply ${topic} in new ways`,
-            `I can guide you through ${topic} innovations`,
-            `Let's explore cutting-edge ${topic} together`
-        ];
-        
-        const timestamp = Date.now().toString().slice(-6);
-        const randomResponses = responseTemplates
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 2)
-            .map(response => `${response} (${timestamp})`);
-            
-        return this.filterNewKnowledge(randomResponses, 'response');
-    }
-    
-    generateRandomPattern() {
-        const patterns = [
-            'analyze → process → optimize → implement',
-            'observe → hypothesize → test → conclude',
-            'input → transform → output → feedback',
-            'discover → understand → apply → improve',
-            'explore → learn → create → innovate'
-        ];
-        return patterns[Math.floor(Math.random() * patterns.length)];
-    }
+    // Removed fake knowledge generation - now using real web learning
     
     filterNewKnowledge(knowledgeArray, type) {
         return knowledgeArray.filter(knowledge => {
