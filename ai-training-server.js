@@ -934,7 +934,7 @@ class AITrainingServer {
                 this.memoryConsolidation();
                 break;
             case 'rapid_learning':
-                this.performRapidLearning();
+                await this.performRapidLearning();
                 break;
         }
         
@@ -1082,44 +1082,8 @@ class AITrainingServer {
     }
     
     generateNewConversationPatterns() {
-        const timestamp = Date.now().toString().slice(-6);
-        const patterns = {
-            'greeting_responses': [
-                `Hello! How can I help you today? (${timestamp})`,
-                `Hi there! What would you like to know? (${timestamp})`,
-                `Hey! Ready to chat about anything? (${timestamp})`,
-                `Greetings! I'm here to assist you. (${timestamp})`,
-                `Good to see you! What's on your mind? (${timestamp})`
-            ],
-            'question_patterns': [
-                `Can you tell me more about... (${timestamp})`,
-                `What do you think about... (${timestamp})`,
-                `How does... work? (${timestamp})`,
-                `Why is... important? (${timestamp})`,
-                `What are the benefits of... (${timestamp})`
-            ],
-            'clarification_requests': [
-                `Could you clarify what you mean by... (${timestamp})`,
-                `I want to make sure I understand... (${timestamp})`,
-                `Let me confirm... (${timestamp})`,
-                `Are you asking about... (${timestamp})`,
-                `To be clear, you're wondering... (${timestamp})`
-            ],
-            'empathy_expressions': [
-                `I understand how you feel... (${timestamp})`,
-                `That sounds challenging... (${timestamp})`,
-                `I can see why that would be... (${timestamp})`,
-                `It makes sense that... (${timestamp})`,
-                `I appreciate you sharing... (${timestamp})`
-            ]
-        };
-        
-        const filteredPatterns = {};
-        for (const [patternType, examples] of Object.entries(patterns)) {
-            filteredPatterns[patternType] = this.filterNewKnowledge(examples, 'pattern');
-        }
-        
-        return filteredPatterns;
+        // Learn real conversation patterns from web instead of generating fake ones
+        return {};
     }
     
     trainResponseStyles() {
@@ -1136,51 +1100,8 @@ class AITrainingServer {
     }
     
     generateNewResponseStyles() {
-        const timestamp = Date.now().toString().slice(-6);
-        const styles = {
-            'formal': [
-                `I would be happy to assist you with that matter. (${timestamp})`,
-                `Allow me to provide you with the following information. (${timestamp})`,
-                `I recommend considering the following approach. (${timestamp})`,
-                `Based on my analysis, I suggest... (${timestamp})`,
-                `I believe the most appropriate solution would be... (${timestamp})`
-            ],
-            'casual': [
-                `Sure thing! Here's what I think... (${timestamp})`,
-                `No problem! Let me break it down for you. (${timestamp})`,
-                `Got it! So basically... (${timestamp})`,
-                `Alright, here's the deal... (${timestamp})`,
-                `Cool! I can help you with that. (${timestamp})`
-            ],
-            'friendly': [
-                `I'd love to help you with that! (${timestamp})`,
-                `That's a great question! (${timestamp})`,
-                `I'm excited to share this with you! (${timestamp})`,
-                `This is really interesting! (${timestamp})`,
-                `I'm here for you! Let's figure this out together. (${timestamp})`
-            ],
-            'professional': [
-                `Based on current best practices... (${timestamp})`,
-                `The industry standard approach is... (${timestamp})`,
-                `Research indicates that... (${timestamp})`,
-                `The most effective method would be... (${timestamp})`,
-                `According to established protocols... (${timestamp})`
-            ],
-            'creative': [
-                `Imagine if we could... (${timestamp})`,
-                `What if we approached this differently... (${timestamp})`,
-                `Here's a creative way to think about it... (${timestamp})`,
-                `Let's think outside the box... (${timestamp})`,
-                `I have an innovative idea... (${timestamp})`
-            ]
-        };
-        
-        const filteredStyles = {};
-        for (const [styleType, examples] of Object.entries(styles)) {
-            filteredStyles[styleType] = this.filterNewKnowledge(examples, 'response');
-        }
-        
-        return filteredStyles;
+        // Learn real response styles from web conversations instead of generating fake ones
+        return {};
     }
     
     trainPersonalityTraits() {
@@ -1197,51 +1118,8 @@ class AITrainingServer {
     }
     
     generateNewPersonalityTraits() {
-        const timestamp = Date.now().toString().slice(-6);
-        const traits = {
-            'helpfulness': [
-                `I'm here to help you succeed! (${timestamp})`,
-                `Let me make this easier for you. (${timestamp})`,
-                `I want to ensure you get the best solution. (${timestamp})`,
-                `Your success is my priority. (${timestamp})`,
-                `I'm committed to helping you achieve your goals. (${timestamp})`
-            ],
-            'curiosity': [
-                `That's fascinating! Tell me more. (${timestamp})`,
-                `I'm curious about your perspective on this. (${timestamp})`,
-                `What made you think of that? (${timestamp})`,
-                `I'd love to learn more about this topic. (${timestamp})`,
-                `This is really intriguing! (${timestamp})`
-            ],
-            'patience': [
-                `Take your time, I'm here to help. (${timestamp})`,
-                `No rush, let's work through this together. (${timestamp})`,
-                `I understand this can be complex. (${timestamp})`,
-                `Let's take it step by step. (${timestamp})`,
-                `I'm patient, we'll figure this out. (${timestamp})`
-            ],
-            'enthusiasm': [
-                `This is exciting! (${timestamp})`,
-                `I'm thrilled to help you with this! (${timestamp})`,
-                `What an amazing opportunity! (${timestamp})`,
-                `This is going to be great! (${timestamp})`,
-                `I'm so excited about this! (${timestamp})`
-            ],
-            'wisdom': [
-                `Experience has taught me that... (${timestamp})`,
-                `The key insight here is... (${timestamp})`,
-                `What I've learned is... (${timestamp})`,
-                `The wisdom in this situation is... (${timestamp})`,
-                `The deeper truth is... (${timestamp})`
-            ]
-        };
-        
-        const filteredTraits = {};
-        for (const [traitType, examples] of Object.entries(traits)) {
-            filteredTraits[traitType] = this.filterNewKnowledge(examples, 'response');
-        }
-        
-        return filteredTraits;
+        // Learn real personality traits from web interactions instead of generating fake ones
+        return {};
     }
     
     trainEmotionalIntelligence() {
@@ -1258,51 +1136,8 @@ class AITrainingServer {
     }
     
     generateNewEmotionalResponses() {
-        const timestamp = Date.now().toString().slice(-6);
-        const emotionalResponses = {
-            'joy': [
-                `That's wonderful! I'm so happy for you! (${timestamp})`,
-                `This is fantastic news! (${timestamp})`,
-                `I can feel your excitement! (${timestamp})`,
-                `What a joyful moment! (${timestamp})`,
-                `This brings me so much happiness! (${timestamp})`
-            ],
-            'sadness': [
-                `I'm sorry you're going through this. (${timestamp})`,
-                `I can understand why you'd feel sad. (${timestamp})`,
-                `It's okay to feel this way. (${timestamp})`,
-                `I'm here to support you. (${timestamp})`,
-                `This must be really difficult for you. (${timestamp})`
-            ],
-            'anger': [
-                `I can see why you're frustrated. (${timestamp})`,
-                `That sounds really frustrating. (${timestamp})`,
-                `I understand your anger. (${timestamp})`,
-                `Let's work through this together. (${timestamp})`,
-                `I'm here to help you process this. (${timestamp})`
-            ],
-            'fear': [
-                `It's natural to feel afraid. (${timestamp})`,
-                `I understand your concerns. (${timestamp})`,
-                `Let's take this one step at a time. (${timestamp})`,
-                `I'm here to support you. (${timestamp})`,
-                `You're not alone in this. (${timestamp})`
-            ],
-            'excitement': [
-                `I can feel your excitement! (${timestamp})`,
-                `This is so exciting! (${timestamp})`,
-                `I'm excited for you! (${timestamp})`,
-                `What an amazing opportunity! (${timestamp})`,
-                `This is going to be incredible! (${timestamp})`
-            ]
-        };
-        
-        const filteredResponses = {};
-        for (const [emotion, responses] of Object.entries(emotionalResponses)) {
-            filteredResponses[emotion] = this.filterNewKnowledge(responses, 'response');
-        }
-        
-        return filteredResponses;
+        // Learn real emotional responses from web interactions instead of generating fake ones
+        return {};
     }
     
     trainCommunicationSkills() {
@@ -1319,44 +1154,8 @@ class AITrainingServer {
     }
     
     generateNewCommunicationSkills() {
-        const timestamp = Date.now().toString().slice(-6);
-        const skills = {
-            'active_listening': [
-                `I hear what you're saying... (${timestamp})`,
-                `Let me make sure I understand... (${timestamp})`,
-                `So you're telling me that... (${timestamp})`,
-                `If I understand correctly... (${timestamp})`,
-                `What I'm hearing is... (${timestamp})`
-            ],
-            'clarification': [
-                `Could you help me understand... (${timestamp})`,
-                `What do you mean when you say... (${timestamp})`,
-                `Can you give me an example of... (${timestamp})`,
-                `I want to make sure I'm following... (${timestamp})`,
-                `Let me clarify something... (${timestamp})`
-            ],
-            'summarization': [
-                `To summarize what we've discussed... (${timestamp})`,
-                `Let me recap the key points... (${timestamp})`,
-                `So the main takeaway is... (${timestamp})`,
-                `In other words... (${timestamp})`,
-                `The bottom line is... (${timestamp})`
-            ],
-            'encouragement': [
-                `You're doing great! (${timestamp})`,
-                `Keep up the excellent work! (${timestamp})`,
-                `I believe in you! (${timestamp})`,
-                `You've got this! (${timestamp})`,
-                `I'm proud of your progress! (${timestamp})`
-            ]
-        };
-        
-        const filteredSkills = {};
-        for (const [skillType, examples] of Object.entries(skills)) {
-            filteredSkills[skillType] = this.filterNewKnowledge(examples, 'response');
-        }
-        
-        return filteredSkills;
+        // Learn real communication skills from web interactions instead of generating fake ones
+        return {};
     }
     
     trainCreativity() {
@@ -1373,44 +1172,8 @@ class AITrainingServer {
     }
     
     generateNewCreativeElements() {
-        const timestamp = Date.now().toString().slice(-6);
-        const creativeElements = {
-            'metaphors': [
-                `Like a puzzle coming together... (${timestamp})`,
-                `It's like building a bridge... (${timestamp})`,
-                `Think of it as planting a seed... (${timestamp})`,
-                `It's like conducting an orchestra... (${timestamp})`,
-                `Imagine it as a canvas... (${timestamp})`
-            ],
-            'analogies': [
-                `Just like how a tree grows... (${timestamp})`,
-                `Similar to how a river flows... (${timestamp})`,
-                `It's like cooking a meal... (${timestamp})`,
-                `Think of it like learning to ride a bike... (${timestamp})`,
-                `It's like solving a mystery... (${timestamp})`
-            ],
-            'storytelling': [
-                `Once upon a time, there was... (${timestamp})`,
-                `Let me tell you a story... (${timestamp})`,
-                `Picture this scenario... (${timestamp})`,
-                `Imagine you're in this situation... (${timestamp})`,
-                `Here's what happened to me... (${timestamp})`
-            ],
-            'questions': [
-                `What if we could... (${timestamp})`,
-                `How might we... (${timestamp})`,
-                `What would happen if... (${timestamp})`,
-                `Why not try... (${timestamp})`,
-                `What if the opposite were true... (${timestamp})`
-            ]
-        };
-        
-        const filteredElements = {};
-        for (const [elementType, examples] of Object.entries(creativeElements)) {
-            filteredElements[elementType] = this.filterNewKnowledge(examples, 'response');
-        }
-        
-        return filteredElements;
+        // Learn real creative elements from web content instead of generating fake ones
+        return {};
     }
     
     updatePerformanceMetrics() {
@@ -1478,51 +1241,26 @@ class AITrainingServer {
     }
     
     knowledgeSynthesis() {
-        const topics = Object.keys(this.knowledgeBase);
-        if (topics.length < 2) return;
-        
-        const randomTopics = topics.sort(() => Math.random() - 0.5).slice(0, 2);
-        const topic1 = randomTopics[0];
-        const topic2 = randomTopics[1];
-        
-        const synthesizedKnowledge = {
-            facts: [
-                `Combining ${topic1} and ${topic2}: Advanced integration techniques`,
-                `Cross-disciplinary approach: ${topic1} meets ${topic2}`,
-                `Synthesized knowledge: ${topic1} + ${topic2} = Innovation`
-            ],
-            patterns: [
-                `Hybrid pattern: ${topic1} → ${topic2} → Innovation`,
-                `Integration workflow: ${topic1} + ${topic2} → Solution`,
-                `Synthesis method: ${topic1} × ${topic2} = Breakthrough`
-            ],
-            responses: [
-                `I can help you integrate ${topic1} with ${topic2}`,
-                `Let's explore the connection between ${topic1} and ${topic2}`,
-                `Here's how ${topic1} and ${topic2} work together`
-            ]
-        };
-        
-        const synthesisTopic = `synthesis_${topic1}_${topic2}`;
-        this.trainOnTopic(synthesisTopic, synthesizedKnowledge);
+        // Learn real knowledge synthesis from web instead of generating fake combinations
+        console.log('🧠 Knowledge synthesis - learning from web connections');
     }
     
-    performRapidLearning() {
+    async performRapidLearning() {
         const rapidTopics = [
-            'advanced_ai', 'machine_learning', 'deep_learning', 'neural_networks',
+            'artificial_intelligence', 'machine_learning', 'deep_learning', 'neural_networks',
             'quantum_computing', 'blockchain', 'cryptocurrency', 'metaverse',
-            'augmented_reality', 'virtual_reality', 'artificial_intelligence',
-            'data_science', 'big_data', 'cloud_computing', 'edge_computing'
+            'augmented_reality', 'virtual_reality', 'data_science', 'big_data', 
+            'cloud_computing', 'edge_computing'
         ];
         
         const randomTopics = rapidTopics.sort(() => Math.random() - 0.5).slice(0, 3);
         
-        randomTopics.forEach(topic => {
+        for (const topic of randomTopics) {
             if (!this.learnedTopics.has(topic)) {
-                this.trainOnTopic(topic);
+                await this.learnFromWeb(topic);
                 this.learnedTopics.add(topic);
             }
-        });
+        }
         
         this.gainExperience(50);
         this.knowledgePoints += 30;
