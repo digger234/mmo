@@ -4,7 +4,7 @@ const app = express();
 
 app.use(express.json());
 
-const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1418953011358859294/echaWxpvuDlwGE6rKGR7tNP36syp4z2pUI4onlGIFc7kLvFuW64WjmHpiioKk85kIGAD';
+const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1419133745562390631/VoJeHw4N-BfGbx2oiuqOj0B-pTg9WQqRoAYK6CCR1698oT58RAVXAgurt2OC4k3uPNGS';
 
 class AITrainingServer {
     constructor() {
@@ -272,8 +272,8 @@ class AITrainingServer {
         try {
             console.log('📱 Loading knowledge from Discord messages...');
             
-            const channelId = '1418952864188862575';
-            const botToken = 'MTQxODk1MzAxMTM1ODg1OTI5NA.GhQZz-.echaWxpvuDlwGE6rKGR7tNP36syp4z2pUI4onlGIFc7kLvFuW64WjmHpiioKk85kIGAD';
+            const channelId = '1419133613416382524';
+            const botToken = 'VoJeHw4N-BfGbx2oiuqOj0B-pTg9WQqRoAYK6CCR1698oT58RAVXAgurt2OC4k3uPNGS';
             
             const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=100`, {
                 headers: {
@@ -472,23 +472,18 @@ class AITrainingServer {
         const knowledge = [];
         
         try {
-            // Wikipedia learning
             const wikiData = await this.fetchFromWikipedia(topic);
             if (wikiData) knowledge.push(...wikiData);
             
-            // News learning
             const newsData = await this.fetchFromNews(topic);
             if (newsData) knowledge.push(...newsData);
             
-            // Reddit learning (for real conversations)
             const redditData = await this.fetchFromReddit(topic);
             if (redditData) knowledge.push(...redditData);
             
-            // YouTube learning (for educational content)
             const youtubeData = await this.fetchFromYouTube(topic);
             if (youtubeData) knowledge.push(...youtubeData);
             
-            // Conversation patterns learning
             const conversationData = await this.fetchConversationPatterns(topic);
             if (conversationData) knowledge.push(...conversationData);
             
@@ -536,7 +531,6 @@ class AITrainingServer {
     
     async fetchFromNews(topic) {
         try {
-            // Using a free news API (you can replace with your preferred API)
             const response = await fetch(`https://newsapi.org/v2/everything?q=${encodeURIComponent(topic)}&sortBy=publishedAt&pageSize=5&apiKey=YOUR_NEWS_API_KEY`);
             if (!response.ok) return null;
             
@@ -566,7 +560,6 @@ class AITrainingServer {
     
     async fetchConversationPatterns(topic) {
         try {
-            // Generate conversation patterns based on topic
             const patterns = this.generateConversationPatterns(topic);
             return patterns;
         } catch (error) {
@@ -578,7 +571,6 @@ class AITrainingServer {
     generateConversationPatterns(topic) {
         const patterns = [];
         
-        // Natural conversation starters
         patterns.push({
             type: 'conversation_starter',
             content: `I'd love to discuss ${topic} with you. What aspects interest you most?`,
@@ -586,7 +578,6 @@ class AITrainingServer {
             timestamp: Date.now()
         });
         
-        // Question patterns
         patterns.push({
             type: 'question_pattern',
             content: `What do you think about the latest developments in ${topic}?`,
@@ -594,7 +585,6 @@ class AITrainingServer {
             timestamp: Date.now()
         });
         
-        // Explanation patterns
         patterns.push({
             type: 'explanation_pattern',
             content: `Let me explain ${topic} in a way that's easy to understand...`,
@@ -602,7 +592,6 @@ class AITrainingServer {
             timestamp: Date.now()
         });
         
-        // Engagement patterns
         patterns.push({
             type: 'engagement_pattern',
             content: `That's a fascinating question about ${topic}! I'm excited to explore this with you.`,
@@ -610,7 +599,6 @@ class AITrainingServer {
             timestamp: Date.now()
         });
         
-        // Empathy patterns
         patterns.push({
             type: 'empathy_pattern',
             content: `I understand your interest in ${topic}. It's a complex subject that many people find challenging.`,
@@ -623,7 +611,6 @@ class AITrainingServer {
     
     async fetchFromReddit(topic) {
         try {
-            // Reddit API for real conversations
             const response = await fetch(`https://www.reddit.com/r/${topic}/hot.json?limit=10`);
             if (!response.ok) return null;
             
@@ -663,7 +650,6 @@ class AITrainingServer {
     
     async fetchFromYouTube(topic) {
         try {
-            // YouTube API for educational content
             const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(topic)}&type=video&maxResults=5&key=YOUR_YOUTUBE_API_KEY`);
             if (!response.ok) return null;
             
@@ -982,7 +968,6 @@ class AITrainingServer {
     }
     
     async generateKnowledgeForTopic(topic, customData) {
-        // Learn from web instead of generating fake data
         await this.learnFromWeb(topic);
         
         return {
@@ -1056,7 +1041,6 @@ class AITrainingServer {
         }
     }
     
-    // Removed fake knowledge generation - now using real web learning
     
     filterNewKnowledge(knowledgeArray, type) {
         return knowledgeArray.filter(knowledge => {
@@ -1082,7 +1066,6 @@ class AITrainingServer {
     }
     
     generateNewConversationPatterns() {
-        // Learn real conversation patterns from web instead of generating fake ones
         return {};
     }
     
@@ -1100,7 +1083,6 @@ class AITrainingServer {
     }
     
     generateNewResponseStyles() {
-        // Learn real response styles from web conversations instead of generating fake ones
         return {};
     }
     
@@ -1118,7 +1100,6 @@ class AITrainingServer {
     }
     
     generateNewPersonalityTraits() {
-        // Learn real personality traits from web interactions instead of generating fake ones
         return {};
     }
     
@@ -1136,7 +1117,6 @@ class AITrainingServer {
     }
     
     generateNewEmotionalResponses() {
-        // Learn real emotional responses from web interactions instead of generating fake ones
         return {};
     }
     
@@ -1154,7 +1134,6 @@ class AITrainingServer {
     }
     
     generateNewCommunicationSkills() {
-        // Learn real communication skills from web interactions instead of generating fake ones
         return {};
     }
     
@@ -1172,7 +1151,6 @@ class AITrainingServer {
     }
     
     generateNewCreativeElements() {
-        // Learn real creative elements from web content instead of generating fake ones
         return {};
     }
     
@@ -1241,7 +1219,6 @@ class AITrainingServer {
     }
     
     knowledgeSynthesis() {
-        // Learn real knowledge synthesis from web instead of generating fake combinations
         console.log('🧠 Knowledge synthesis - learning from web connections');
     }
     
@@ -2094,7 +2071,7 @@ class AITrainingServer {
             fields: [
                 {
                     name: "📱 Discord Integration",
-                    value: `**Channel ID:** 1418952864188862575\n**Bot Token:** Configured\n**Message Limit:** 100 messages\n**Filter:** Captain Hook only\n**Status:** ✅ Active`,
+                    value: `**Channel ID:** 1419133613416382524\n**Bot Token:** Configured\n**Message Limit:** 100 messages\n**Filter:** Captain Hook only\n**Status:** ✅ Active`,
                     inline: true
                 },
                 {
