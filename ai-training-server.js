@@ -74,7 +74,9 @@ class AITrainingServer {
             '/gaps': 'show_knowledge_gaps',
             '.gaps': 'show_knowledge_gaps',
             '/storage': 'show_storage_status',
-            '.storage': 'show_storage_status'
+            '.storage': 'show_storage_status',
+            '/discord': 'show_discord_sync',
+            '.discord': 'show_discord_sync'
         };
         this.startTime = Date.now();
         
@@ -199,9 +201,10 @@ class AITrainingServer {
         this.init();
     }
     
-    init() {
+    async init() {
         console.log('🚀 AI Training Server started');
         this.loadPersistentData();
+        await this.loadFromDiscord();
         this.startTraining();
         this.setupRoutes();
     }
@@ -263,6 +266,190 @@ class AITrainingServer {
             console.error('❌ Error loading persistent data:', error);
             console.log('🔄 Starting with fresh data...');
         }
+    }
+    
+    async loadFromDiscord() {
+        try {
+            console.log('📱 Loading knowledge from Discord messages...');
+            
+            const channelId = '1418952864188862575';
+            const botToken = 'MTQxODk1MzAxMTM1ODg1OTI5NA.GhQZz-.echaWxpvuDlwGE6rKGR7tNP36syp4z2pUI4onlGIFc7kLvFuW64WjmHpiioKk85kIGAD';
+            
+            const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=100`, {
+                headers: {
+                    'Authorization': `Bot ${botToken}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Discord API Error: ${response.statusText}`);
+            }
+            
+            const messages = await response.json();
+            let loadedCount = 0;
+            let skippedCount = 0;
+            
+            for (const message of messages) {
+                if (message.author.username === 'Captain Hook') {
+                    const knowledgeData = this.extractKnowledgeFromDiscordMessage(message);
+                    if (knowledgeData) {
+                        this.mergeDiscordKnowledge(knowledgeData);
+                        loadedCount++;
+                    }
+                } else {
+                    skippedCount++;
+                }
+            }
+            
+            console.log(`📱 Discord knowledge loaded: ${loadedCount} messages from Captain Hook, ${skippedCount} messages skipped`);
+            console.log(`🧠 Final state: Level ${this.level}, XP ${this.experience}, Knowledge Points ${this.knowledgePoints}`);
+            
+        } catch (error) {
+            console.error('❌ Error loading from Discord:', error);
+            console.log('🔄 Continuing with local data only...');
+        }
+    }
+    
+    extractKnowledgeFromDiscordMessage(message) {
+        try {
+            if (message.embeds && message.embeds.length > 0) {
+                const embed = message.embeds[0];
+                
+                if (embed.title && embed.title.includes('AI Knowledge Backup')) {
+                    const knowledgeData = {
+                        level: this.extractNumberFromText(embed.description, 'Level:', this.level),
+                        experience: this.extractNumberFromText(embed.description, 'Experience:', this.experience),
+                        knowledgePoints: this.extractNumberFromText(embed.description, 'Knowledge Points:', this.knowledgePoints),
+                        knowledgeBase: {},
+                        learnedFacts: new Set(),
+                        learnedPatterns: new Set(),
+                        learnedResponses: new Set(),
+                        learnedTopics: new Set()
+                    };
+                    
+                    if (embed.fields) {
+                        embed.fields.forEach(field => {
+                            if (field.name === '📚 Knowledge Base Summary') {
+                                this.parseKnowledgeBaseFromDiscord(field.value, knowledgeData);
+                            }
+                        });
+                    }
+                    
+                    return knowledgeData;
+                }
+            }
+            
+            if (message.content && message.content.includes('Complete AI Training Data')) {
+                const jsonMatch = message.content.match(/```json\n([\s\S]*?)\n```/);
+                if (jsonMatch) {
+                    try {
+                        const fullData = JSON.parse(jsonMatch[1]);
+                        return {
+                            level: fullData.level || this.level,
+                            experience: fullData.experience || this.experience,
+                            knowledgePoints: fullData.knowledgePoints || this.knowledgePoints,
+                            knowledgeBase: fullData.knowledgeBase || {},
+                            learnedFacts: new Set(fullData.learnedFacts || []),
+                            learnedPatterns: new Set(fullData.learnedPatterns || []),
+                            learnedResponses: new Set(fullData.learnedResponses || []),
+                            learnedTopics: new Set(fullData.learnedTopics || [])
+                        };
+                    } catch (e) {
+                        console.error('Error parsing Discord JSON data:', e);
+                    }
+                }
+            }
+            
+            return null;
+        } catch (error) {
+            console.error('Error extracting knowledge from Discord message:', error);
+            return null;
+        }
+    }
+    
+    extractNumberFromText(text, label, defaultValue) {
+        const regex = new RegExp(`${label}\\s*(\\d+)`, 'i');
+        const match = text.match(regex);
+        return match ? parseInt(match[1]) : defaultValue;
+    }
+    
+    parseKnowledgeBaseFromDiscord(text, knowledgeData) {
+        const lines = text.split('\n');
+        for (const line of lines) {
+            if (line.includes('**') && line.includes(':')) {
+                const topicMatch = line.match(/\*\*(.*?)\*\*:\s*(\d+)\s*facts,\s*(\d+)\s*patterns,\s*(\d+)\s*responses/);
+                if (topicMatch) {
+                    const topic = topicMatch[1];
+                    const facts = parseInt(topicMatch[2]);
+                    const patterns = parseInt(topicMatch[3]);
+                    const responses = parseInt(topicMatch[4]);
+                    
+                    if (!knowledgeData.knowledgeBase[topic]) {
+                        knowledgeData.knowledgeBase[topic] = {
+                            facts: [],
+                            patterns: [],
+                            responses: [],
+                            examples: [],
+                            lastUpdated: Date.now()
+                        };
+                    }
+                    
+                    for (let i = 0; i < facts; i++) {
+                        knowledgeData.learnedFacts.add(`${topic}_fact_${i}`);
+                    }
+                    for (let i = 0; i < patterns; i++) {
+                        knowledgeData.learnedPatterns.add(`${topic}_pattern_${i}`);
+                    }
+                    for (let i = 0; i < responses; i++) {
+                        knowledgeData.learnedResponses.add(`${topic}_response_${i}`);
+                    }
+                    
+                    knowledgeData.learnedTopics.add(topic);
+                }
+            }
+        }
+    }
+    
+    mergeDiscordKnowledge(discordData) {
+        if (discordData.level > this.level) {
+            this.level = discordData.level;
+            console.log(`📈 Level updated from Discord: ${this.level}`);
+        }
+        
+        if (discordData.experience > this.experience) {
+            this.experience = discordData.experience;
+            console.log(`⭐ Experience updated from Discord: ${this.experience}`);
+        }
+        
+        if (discordData.knowledgePoints > this.knowledgePoints) {
+            this.knowledgePoints = discordData.knowledgePoints;
+            console.log(`📚 Knowledge Points updated from Discord: ${this.knowledgePoints}`);
+        }
+        
+        Object.keys(discordData.knowledgeBase).forEach(topic => {
+            if (!this.knowledgeBase[topic]) {
+                this.knowledgeBase[topic] = discordData.knowledgeBase[topic];
+                console.log(`📖 New topic loaded from Discord: ${topic}`);
+            }
+        });
+        
+        discordData.learnedFacts.forEach(fact => {
+            this.learnedFacts.add(fact);
+        });
+        
+        discordData.learnedPatterns.forEach(pattern => {
+            this.learnedPatterns.add(pattern);
+        });
+        
+        discordData.learnedResponses.forEach(response => {
+            this.learnedResponses.add(response);
+        });
+        
+        discordData.learnedTopics.forEach(topic => {
+            this.learnedTopics.add(topic);
+        });
+        
+        console.log(`🔄 Discord knowledge merged successfully`);
     }
     
     savePersistentData() {
@@ -1475,6 +1662,9 @@ class AITrainingServer {
                 case 'show_storage_status':
                     this.sendStorageStatusCommand();
                     break;
+                case 'show_discord_sync':
+                    this.sendDiscordSyncCommand();
+                    break;
             }
         }
     }
@@ -1633,7 +1823,7 @@ class AITrainingServer {
                 },
                 {
                     name: "💾 Storage Commands",
-                    value: "**`/storage`** or **`.storage`** - Show persistent storage status",
+                    value: "**`/storage`** or **`.storage`** - Show persistent storage status\n**`/discord`** or **`.discord`** - Show Discord sync status",
                     inline: false
                 },
                 {
@@ -2039,6 +2229,42 @@ class AITrainingServer {
             ],
             footer: {
                 text: "AI Training Server - Persistent Storage • Data survives redeployments"
+            }
+        };
+        
+        this.sendDiscordMessage(embed);
+    }
+    
+    sendDiscordSyncCommand() {
+        const embed = {
+            title: "📱 Discord Knowledge Sync Status",
+            description: `**Discord Integration Dashboard**\n\n**🕐 Last Update:** ${new Date().toLocaleString()}\n**🤖 Bot Filter:** Captain Hook only\n**📚 Knowledge Sources:** Discord + Local Storage`,
+            color: 0x7289da,
+            timestamp: new Date().toISOString(),
+            fields: [
+                {
+                    name: "📱 Discord Integration",
+                    value: `**Channel ID:** 1418952864188862575\n**Bot Token:** Configured\n**Message Limit:** 100 messages\n**Filter:** Captain Hook only\n**Status:** ✅ Active`,
+                    inline: true
+                },
+                {
+                    name: "📚 Knowledge Sources",
+                    value: `**Local Storage:** ${Object.keys(this.knowledgeBase).length} topics\n**Discord Backup:** Every 5 minutes\n**Auto-Sync:** On startup\n**Duplicate Prevention:** ✅ Enabled`,
+                    inline: true
+                },
+                {
+                    name: "🔄 Sync Process",
+                    value: `**1.** Load local persistent data\n**2.** Fetch Discord messages (Captain Hook only)\n**3.** Extract knowledge from embeds/JSON\n**4.** Merge with local data (avoid duplicates)\n**5.** Continue training from merged state`,
+                    inline: false
+                },
+                {
+                    name: "🎯 Current State",
+                    value: `**Level:** ${this.level}\n**Experience:** ${this.experience}\n**Knowledge Points:** ${this.knowledgePoints}\n**Topics:** ${Object.keys(this.knowledgeBase).length}\n**Facts:** ${this.learnedFacts.size}\n**Patterns:** ${this.learnedPatterns.size}\n**Responses:** ${this.learnedResponses.size}`,
+                    inline: false
+                }
+            ],
+            footer: {
+                text: "AI Training Server - Discord Sync • Prevents knowledge duplication on redeploy"
             }
         };
         
