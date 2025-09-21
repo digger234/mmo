@@ -72,7 +72,9 @@ class AITrainingServer {
             '/mastery': 'show_mastery',
             '.mastery': 'show_mastery',
             '/gaps': 'show_knowledge_gaps',
-            '.gaps': 'show_knowledge_gaps'
+            '.gaps': 'show_knowledge_gaps',
+            '/storage': 'show_storage_status',
+            '.storage': 'show_storage_status'
         };
         this.startTime = Date.now();
         
@@ -199,8 +201,123 @@ class AITrainingServer {
     
     init() {
         console.log('🚀 AI Training Server started');
+        this.loadPersistentData();
         this.startTraining();
         this.setupRoutes();
+    }
+    
+    loadPersistentData() {
+        try {
+            const fs = require('fs');
+            const path = require('path');
+            
+            const dataDir = path.join(__dirname, 'ai_data');
+            if (!fs.existsSync(dataDir)) {
+                fs.mkdirSync(dataDir, { recursive: true });
+            }
+            
+            const knowledgeFile = path.join(dataDir, 'knowledge.json');
+            const analyticsFile = path.join(dataDir, 'analytics.json');
+            const learningFile = path.join(dataDir, 'learning.json');
+            
+            if (fs.existsSync(knowledgeFile)) {
+                const knowledgeData = JSON.parse(fs.readFileSync(knowledgeFile, 'utf8'));
+                this.knowledgeBase = knowledgeData.knowledgeBase || {};
+                this.learnedFacts = new Set(knowledgeData.learnedFacts || []);
+                this.learnedPatterns = new Set(knowledgeData.learnedPatterns || []);
+                this.learnedResponses = new Set(knowledgeData.learnedResponses || []);
+                this.learnedTopics = new Set(knowledgeData.learnedTopics || []);
+                this.knowledgeHash = new Map(Object.entries(knowledgeData.knowledgeHash || {}));
+                this.level = knowledgeData.level || 1;
+                this.experience = knowledgeData.experience || 0;
+                this.knowledgePoints = knowledgeData.knowledgePoints || 0;
+                console.log('📚 Loaded knowledge data from persistent storage');
+            }
+            
+            if (fs.existsSync(analyticsFile)) {
+                const analyticsData = JSON.parse(fs.readFileSync(analyticsFile, 'utf8'));
+                this.analytics = analyticsData.analytics || this.analytics;
+                this.performanceMetrics = analyticsData.performanceMetrics || this.performanceMetrics;
+                this.learningCycles = analyticsData.learningCycles || [];
+                this.learningMilestones = analyticsData.learningMilestones || [];
+                this.detailedLogs = analyticsData.detailedLogs || [];
+                console.log('📊 Loaded analytics data from persistent storage');
+            }
+            
+            if (fs.existsSync(learningFile)) {
+                const learningData = JSON.parse(fs.readFileSync(learningFile, 'utf8'));
+                this.adaptiveLearning = learningData.adaptiveLearning || this.adaptiveLearning;
+                this.spacedRepetition = learningData.spacedRepetition || this.spacedRepetition;
+                this.knowledgePrerequisites = learningData.knowledgePrerequisites || this.knowledgePrerequisites;
+                this.multimodalLearning = learningData.multimodalLearning || this.multimodalLearning;
+                this.learningObjectives = learningData.learningObjectives || this.learningObjectives;
+                this.knowledgeGapAnalysis = learningData.knowledgeGapAnalysis || this.knowledgeGapAnalysis;
+                this.resourceManagement = learningData.resourceManagement || this.resourceManagement;
+                this.masteryLearning = learningData.masteryLearning || this.masteryLearning;
+                console.log('🎓 Loaded learning data from persistent storage');
+            }
+            
+            console.log(`🧠 AI Training Server restored: Level ${this.level}, XP ${this.experience}, Knowledge Points ${this.knowledgePoints}`);
+            
+        } catch (error) {
+            console.error('❌ Error loading persistent data:', error);
+            console.log('🔄 Starting with fresh data...');
+        }
+    }
+    
+    savePersistentData() {
+        try {
+            const fs = require('fs');
+            const path = require('path');
+            
+            const dataDir = path.join(__dirname, 'ai_data');
+            if (!fs.existsSync(dataDir)) {
+                fs.mkdirSync(dataDir, { recursive: true });
+            }
+            
+            const knowledgeData = {
+                knowledgeBase: this.knowledgeBase,
+                learnedFacts: Array.from(this.learnedFacts),
+                learnedPatterns: Array.from(this.learnedPatterns),
+                learnedResponses: Array.from(this.learnedResponses),
+                learnedTopics: Array.from(this.learnedTopics),
+                knowledgeHash: Object.fromEntries(this.knowledgeHash),
+                level: this.level,
+                experience: this.experience,
+                knowledgePoints: this.knowledgePoints,
+                timestamp: Date.now()
+            };
+            
+            const analyticsData = {
+                analytics: this.analytics,
+                performanceMetrics: this.performanceMetrics,
+                learningCycles: this.learningCycles,
+                learningMilestones: this.learningMilestones,
+                detailedLogs: this.detailedLogs,
+                timestamp: Date.now()
+            };
+            
+            const learningData = {
+                adaptiveLearning: this.adaptiveLearning,
+                spacedRepetition: this.spacedRepetition,
+                knowledgePrerequisites: this.knowledgePrerequisites,
+                multimodalLearning: this.multimodalLearning,
+                learningObjectives: this.learningObjectives,
+                knowledgeGapAnalysis: this.knowledgeGapAnalysis,
+                resourceManagement: this.resourceManagement,
+                masteryLearning: this.masteryLearning,
+                timestamp: Date.now()
+            };
+            
+            fs.writeFileSync(path.join(dataDir, 'knowledge.json'), JSON.stringify(knowledgeData, null, 2));
+            fs.writeFileSync(path.join(dataDir, 'analytics.json'), JSON.stringify(analyticsData, null, 2));
+            fs.writeFileSync(path.join(dataDir, 'learning.json'), JSON.stringify(learningData, null, 2));
+            
+            console.log('💾 Persistent data saved successfully');
+            
+        } catch (error) {
+            console.error('❌ Error saving persistent data:', error);
+        }
     }
     
     setupRoutes() {
@@ -294,6 +411,10 @@ class AITrainingServer {
         setInterval(() => {
             this.backupToDiscord();
         }, 300000);
+        
+        setInterval(() => {
+            this.savePersistentData();
+        }, 60000);
         
         setInterval(() => {
             this.sendRealTimeUpdate();
@@ -1351,6 +1472,9 @@ class AITrainingServer {
                 case 'show_knowledge_gaps':
                     this.sendKnowledgeGapsCommand();
                     break;
+                case 'show_storage_status':
+                    this.sendStorageStatusCommand();
+                    break;
             }
         }
     }
@@ -1505,6 +1629,11 @@ class AITrainingServer {
                 {
                     name: "🎓 Learning Commands",
                     value: "**`/learning`** or **`.learning`** - Show adaptive learning paths\n**`/mastery`** or **`.mastery`** - Show mastery learning system\n**`/gaps`** or **`.gaps`** - Show knowledge gap analysis",
+                    inline: false
+                },
+                {
+                    name: "💾 Storage Commands",
+                    value: "**`/storage`** or **`.storage`** - Show persistent storage status",
                     inline: false
                 },
                 {
@@ -1845,6 +1974,75 @@ class AITrainingServer {
         const levels = ['beginner', 'intermediate', 'advanced'];
         const currentIndex = levels.indexOf(currentPath);
         return currentIndex < levels.length - 1 ? levels[currentIndex + 1] : 'expert';
+    }
+    
+    sendStorageStatusCommand() {
+        const fs = require('fs');
+        const path = require('path');
+        
+        const dataDir = path.join(__dirname, 'ai_data');
+        const knowledgeFile = path.join(dataDir, 'knowledge.json');
+        const analyticsFile = path.join(dataDir, 'analytics.json');
+        const learningFile = path.join(dataDir, 'learning.json');
+        
+        const knowledgeExists = fs.existsSync(knowledgeFile);
+        const analyticsExists = fs.existsSync(analyticsFile);
+        const learningExists = fs.existsSync(learningFile);
+        
+        let knowledgeSize = 0;
+        let analyticsSize = 0;
+        let learningSize = 0;
+        
+        if (knowledgeExists) {
+            const stats = fs.statSync(knowledgeFile);
+            knowledgeSize = stats.size;
+        }
+        
+        if (analyticsExists) {
+            const stats = fs.statSync(analyticsFile);
+            analyticsSize = stats.size;
+        }
+        
+        if (learningExists) {
+            const stats = fs.statSync(learningFile);
+            learningSize = stats.size;
+        }
+        
+        const totalSize = knowledgeSize + analyticsSize + learningSize;
+        
+        const embed = {
+            title: "💾 Persistent Storage Status",
+            description: `**Data Persistence Dashboard**\n\n**🕐 Last Update:** ${new Date().toLocaleString()}\n**💾 Total Storage:** ${(totalSize / 1024).toFixed(2)} KB\n**🔄 Auto-Save:** Every 1 minute`,
+            color: 0x2ecc71,
+            timestamp: new Date().toISOString(),
+            fields: [
+                {
+                    name: "📚 Knowledge Storage",
+                    value: `**Status:** ${knowledgeExists ? '✅ Active' : '❌ Not Found'}\n**Size:** ${(knowledgeSize / 1024).toFixed(2)} KB\n**Topics:** ${Object.keys(this.knowledgeBase).length}\n**Facts:** ${this.learnedFacts.size}\n**Patterns:** ${this.learnedPatterns.size}\n**Responses:** ${this.learnedResponses.size}`,
+                    inline: true
+                },
+                {
+                    name: "📊 Analytics Storage",
+                    value: `**Status:** ${analyticsExists ? '✅ Active' : '❌ Not Found'}\n**Size:** ${(analyticsSize / 1024).toFixed(2)} KB\n**Data Points:** ${this.analytics.learningTrends.length}\n**Logs:** ${this.detailedLogs.length}\n**Milestones:** ${this.learningMilestones.length}`,
+                    inline: true
+                },
+                {
+                    name: "🎓 Learning Storage",
+                    value: `**Status:** ${learningExists ? '✅ Active' : '❌ Not Found'}\n**Size:** ${(learningSize / 1024).toFixed(2)} KB\n**Learning Path:** ${this.adaptiveLearning.currentPath}\n**Mastery Topics:** ${this.masteryLearning.topicMastery.size}\n**Gaps:** ${this.knowledgeGapAnalysis.weakAreas.length}`,
+                    inline: true
+                },
+                {
+                    name: "🔄 Auto-Save Schedule",
+                    value: `**Knowledge:** Every 1 minute\n**Discord Backup:** Every 5 minutes\n**Real-time Updates:** Every 2 minutes (when monitoring ON)\n**Graceful Shutdown:** ✅ Enabled`,
+                    inline: false
+                }
+            ],
+            footer: {
+                text: "AI Training Server - Persistent Storage • Data survives redeployments"
+            }
+        };
+        
+        this.sendDiscordMessage(embed);
     }
     
     sendDiscordMessage(embed) {
@@ -3049,4 +3247,19 @@ app.listen(3000, () => {
     console.log('🚀 AI Training Server running on port 3000');
     console.log('📱 Discord webhook configured');
     console.log('🧠 24/7 training started');
+    console.log('💾 Persistent storage enabled');
+});
+
+process.on('SIGINT', () => {
+    console.log('🛑 Shutting down AI Training Server...');
+    trainingServer.savePersistentData();
+    console.log('💾 Data saved successfully');
+    process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+    console.log('🛑 Shutting down AI Training Server...');
+    trainingServer.savePersistentData();
+    console.log('💾 Data saved successfully');
+    process.exit(0);
 });
